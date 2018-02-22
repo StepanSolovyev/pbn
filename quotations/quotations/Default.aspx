@@ -3,20 +3,19 @@
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 
     <div class="jumbotron">
-        <h1>ASP.NET</h1>
-        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS, and JavaScript.</p>
-        <p><a href="http://www.asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+        <h1>ИИС</h1>
+        <p class="lead">Индивидуальный инвестиционный счёт (ИИС) — это особый брокерский счет или счет доверительного физического лица, по которому предусмотрены 2 вида (на выбор) налоговых льгот и есть ряд ограничений.</p>
+        <p><a href="http://www.moex.com" class="btn btn-primary btn-lg">Подробнее &raquo;</a></p>
     </div>
 
     <div class="row">
         <div class="col-md-4">
             <h2>Getting started</h2>
             <p>
-                ASP.NET Web Forms lets you build dynamic websites using a familiar drag-and-drop, event-driven model.
-            A design surface and hundreds of controls and components let you rapidly build sophisticated, powerful UI-driven sites with data access.
+                Некоторый текст
             </p>
             <p>
-                <a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301948">Learn more &raquo;</a>
+                <a class="btn btn-default" href="http://www.moex.com/s188#m_1">Подробнее &raquo;</a>
             </p>
         </div>
         <div class="col-md-4">

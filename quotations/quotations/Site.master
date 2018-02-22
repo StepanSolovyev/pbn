@@ -6,7 +6,7 @@
 <head runat="server">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%: Page.Title %> - My ASP.NET Application</title>
+    <title><%: Page.Title %> - Application Name</title>
 
     <asp:PlaceHolder runat="server">
         <%: Scripts.Render("~/bundles/modernizr") %>
@@ -53,6 +53,8 @@
                         <li><a runat="server" href="~/">ToPage1</a></li>
                         <li><a runat="server" href="~/About">ToPage2</a></li>
                         <li><a runat="server" href="~/Contact">ToPage3</a></li>
+                        <li><a runat="server" href="~/Page4">ToPage4</a></li>
+                        <li><a runat="server" href="~/Page5">ToPage5</a></li>
                         <li><a runat="server" href="~/DevExpressGallery">DevExpressGallerySimple</a></li>
                         <li><a runat="server" href="~/DevExpressGalleryDataCharts">DevExpressGalleryDataCharts</a></li>
                     </ul>
@@ -80,7 +82,7 @@
             </asp:ContentPlaceHolder>
             <hr />
             <footer>
-                <p>&copy; <%: DateTime.Now.Year %> - My ASP.NET Application</p>
+                <p>&copy; <%: DateTime.Now.Year %> - Application Name</p>
             </footer>
         </div>
     </form>
