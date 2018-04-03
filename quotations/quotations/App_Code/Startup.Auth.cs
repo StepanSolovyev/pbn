@@ -34,11 +34,11 @@ namespace quotations
             //   appId: "",
             //   appSecret: "");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            {
+                ClientId = "602457128627-hi6l3om2bct0c75a08cqf56m9sl4th8r.apps.googleusercontent.com",
+                ClientSecret = "I9Rar5ZKrcyf45zkp9tfKtQE"
+            });
         }
     }
 }
