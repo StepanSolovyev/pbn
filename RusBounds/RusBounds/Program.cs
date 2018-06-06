@@ -35,7 +35,8 @@ namespace OFZ
             //char[] EndINN= {'ИНН' };
             //string resultINN0 = INN0.TrimEnd(EndINN);
             //Console.WriteLine(resultINN0);
-            var INN1 = doc1.DocumentNode.SelectSingleNode("/html/body/table[4]/tbody/tr/td[4]/table[7]/tbody/tr[1]/td/b");
+            // var INN1 = doc1.DocumentNode.SelectSingleNode("/html/body/table[4]/tbody/tr/td[4]/table[7]/tbody/tr[1]/td/b");
+            var INN1 = doc1.DocumentNode.SelectSingleNode("/html//body/table[4]//tbody/tr[6]/td[2]");
             Console.WriteLine(INN1.InnerText);
             Console.ReadKey();
 

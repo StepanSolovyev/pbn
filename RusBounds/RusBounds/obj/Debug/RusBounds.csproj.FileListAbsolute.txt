@@ -19,3 +19,14 @@ C:\Users\ikuligina\AppData\Roaming\Skype\My Skype Received Files\RusBounds\RusBo
 C:\Users\ikuligina\AppData\Roaming\Skype\My Skype Received Files\RusBounds\RusBounds\obj\Debug\RusBounds.csproj.CoreCompileInputs.cache
 C:\Users\ikuligina\AppData\Roaming\Skype\My Skype Received Files\RusBounds\RusBounds\obj\Debug\RusBounds.exe
 C:\Users\ikuligina\AppData\Roaming\Skype\My Skype Received Files\RusBounds\RusBounds\obj\Debug\RusBounds.pdb
+C:\Users\ssolovyev\Source\Repos\pbn\RusBounds\RusBounds\bin\Debug\RusBounds.exe.config
+C:\Users\ssolovyev\Source\Repos\pbn\RusBounds\RusBounds\bin\Debug\RusBounds.exe
+C:\Users\ssolovyev\Source\Repos\pbn\RusBounds\RusBounds\bin\Debug\RusBounds.pdb
+C:\Users\ssolovyev\Source\Repos\pbn\RusBounds\RusBounds\bin\Debug\HtmlAgilityPack.dll
+C:\Users\ssolovyev\Source\Repos\pbn\RusBounds\RusBounds\bin\Debug\HtmlAgilityPack.pdb
+C:\Users\ssolovyev\Source\Repos\pbn\RusBounds\RusBounds\bin\Debug\HtmlAgilityPack.xml
+C:\Users\ssolovyev\Source\Repos\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.csprojAssemblyReference.cache
+C:\Users\ssolovyev\Source\Repos\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.csproj.CoreCompileInputs.cache
+C:\Users\ssolovyev\Source\Repos\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.csproj.CopyComplete
+C:\Users\ssolovyev\Source\Repos\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.exe
+C:\Users\ssolovyev\Source\Repos\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.pdb
