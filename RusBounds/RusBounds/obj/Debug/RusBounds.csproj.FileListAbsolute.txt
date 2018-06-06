@@ -1,0 +1,21 @@
+C:\Users\pbabanov\source\repos\RusBounds\RusBounds\bin\Debug\RusBounds.exe.config
+C:\Users\pbabanov\source\repos\RusBounds\RusBounds\bin\Debug\RusBounds.exe
+C:\Users\pbabanov\source\repos\RusBounds\RusBounds\bin\Debug\RusBounds.pdb
+C:\Users\pbabanov\source\repos\RusBounds\RusBounds\bin\Debug\HtmlAgilityPack.dll
+C:\Users\pbabanov\source\repos\RusBounds\RusBounds\bin\Debug\HtmlAgilityPack.pdb
+C:\Users\pbabanov\source\repos\RusBounds\RusBounds\bin\Debug\HtmlAgilityPack.xml
+C:\Users\pbabanov\source\repos\RusBounds\RusBounds\obj\Debug\RusBounds.csprojResolveAssemblyReference.cache
+C:\Users\pbabanov\source\repos\RusBounds\RusBounds\obj\Debug\RusBounds.csproj.CoreCompileInputs.cache
+C:\Users\pbabanov\source\repos\RusBounds\RusBounds\obj\Debug\RusBounds.csproj.CopyComplete
+C:\Users\pbabanov\source\repos\RusBounds\RusBounds\obj\Debug\RusBounds.exe
+C:\Users\pbabanov\source\repos\RusBounds\RusBounds\obj\Debug\RusBounds.pdb
+C:\Users\ikuligina\AppData\Roaming\Skype\My Skype Received Files\RusBounds\RusBounds\bin\Debug\RusBounds.exe.config
+C:\Users\ikuligina\AppData\Roaming\Skype\My Skype Received Files\RusBounds\RusBounds\bin\Debug\RusBounds.exe
+C:\Users\ikuligina\AppData\Roaming\Skype\My Skype Received Files\RusBounds\RusBounds\bin\Debug\RusBounds.pdb
+C:\Users\ikuligina\AppData\Roaming\Skype\My Skype Received Files\RusBounds\RusBounds\bin\Debug\HtmlAgilityPack.dll
+C:\Users\ikuligina\AppData\Roaming\Skype\My Skype Received Files\RusBounds\RusBounds\bin\Debug\HtmlAgilityPack.pdb
+C:\Users\ikuligina\AppData\Roaming\Skype\My Skype Received Files\RusBounds\RusBounds\bin\Debug\HtmlAgilityPack.xml
+C:\Users\ikuligina\AppData\Roaming\Skype\My Skype Received Files\RusBounds\RusBounds\obj\Debug\RusBounds.csprojResolveAssemblyReference.cache
+C:\Users\ikuligina\AppData\Roaming\Skype\My Skype Received Files\RusBounds\RusBounds\obj\Debug\RusBounds.csproj.CoreCompileInputs.cache
+C:\Users\ikuligina\AppData\Roaming\Skype\My Skype Received Files\RusBounds\RusBounds\obj\Debug\RusBounds.exe
+C:\Users\ikuligina\AppData\Roaming\Skype\My Skype Received Files\RusBounds\RusBounds\obj\Debug\RusBounds.pdb
