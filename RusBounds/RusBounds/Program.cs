@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using RusBounds;
 
 namespace OFZ
 {
@@ -11,33 +12,13 @@ namespace OFZ
     {
         static void Main(string[] args)
         {
-            HtmlAgilityPack.HtmlWeb web = new HtmlWeb();
-            web.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
             
-            HtmlAgilityPack.HtmlDocument doc = web.Load("http://www.rusbonds.ru/srch_emitent.asp");                 
-            
-            var featuredArticle = doc.DocumentNode.SelectSingleNode("/html[1]/body[1]/div[1]/table[2]/tbody[1]/tr[1]/td[2]/a");        
-         
-            string XPINN = featuredArticle.GetAttributeValue("href", null);
-            //Console.WriteLine(XPINN);
-            string XP = "http://www.rusbonds.ru" + XPINN;
-            Console.WriteLine(XP);
-            //Console.WriteLine(featuredArticle.InnerText);
-            //Console.ReadKey();
 
+            RBParser Parser = new RBParser();
+            string emitentnamber = "6874";
 
-            //ИНН
-            HtmlAgilityPack.HtmlWeb web1 = new HtmlWeb();
-            web1.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
-            HtmlAgilityPack.HtmlDocument doc1 = web1.Load(XP);
-            //string INN0 = doc1.DocumentNode.InnerText;
-            //Console.WriteLine(result);
-            //char[] EndINN= {'ИНН' };
-            //string resultINN0 = INN0.TrimEnd(EndINN);
-            //Console.WriteLine(resultINN0);
-            // var INN1 = doc1.DocumentNode.SelectSingleNode("/html/body/table[4]/tbody/tr/td[4]/table[7]/tbody/tr[1]/td/b");
-            var INN1 = doc1.DocumentNode.SelectSingleNode("/html//body/table[4]//tbody/tr[6]/td[2]");
-            Console.WriteLine(INN1.InnerText);
+            //RusB = featuredArticle.GetAttributeValue("href", null);
+            Console.WriteLine(Parser.GetEmitentData(emitentnamber).inn);
             Console.ReadKey();
 
             //IHtmlDocument angle = new HtmlParser(html).Parse();
