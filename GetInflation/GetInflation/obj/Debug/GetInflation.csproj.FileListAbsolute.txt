@@ -1,0 +1,7 @@
+C:\Users\ikuligina\Documents\Visual Studio 2017\Projects\GetInflation\GetInflation\bin\Debug\GetInflation.exe.config
+C:\Users\ikuligina\Documents\Visual Studio 2017\Projects\GetInflation\GetInflation\bin\Debug\GetInflation.exe
+C:\Users\ikuligina\Documents\Visual Studio 2017\Projects\GetInflation\GetInflation\bin\Debug\GetInflation.pdb
+C:\Users\ikuligina\Documents\Visual Studio 2017\Projects\GetInflation\GetInflation\obj\Debug\GetInflation.csprojResolveAssemblyReference.cache
+C:\Users\ikuligina\Documents\Visual Studio 2017\Projects\GetInflation\GetInflation\obj\Debug\GetInflation.csproj.CoreCompileInputs.cache
+C:\Users\ikuligina\Documents\Visual Studio 2017\Projects\GetInflation\GetInflation\obj\Debug\GetInflation.exe
+C:\Users\ikuligina\Documents\Visual Studio 2017\Projects\GetInflation\GetInflation\obj\Debug\GetInflation.pdb
