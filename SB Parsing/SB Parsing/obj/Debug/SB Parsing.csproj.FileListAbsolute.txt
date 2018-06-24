@@ -8,3 +8,14 @@ C:\Users\ikuligina\Documents\Visual Studio 2017\Projects\SB Parsing\SB Parsing\o
 C:\Users\ikuligina\Documents\Visual Studio 2017\Projects\SB Parsing\SB Parsing\obj\Debug\SB Parsing.csproj.CoreCompileInputs.cache
 C:\Users\ikuligina\Documents\Visual Studio 2017\Projects\SB Parsing\SB Parsing\obj\Debug\SB Parsing.exe
 C:\Users\ikuligina\Documents\Visual Studio 2017\Projects\SB Parsing\SB Parsing\obj\Debug\SB Parsing.pdb
+C:\Users\Stepan\Source\Repos\pbn\SB Parsing\SB Parsing\bin\Debug\SB Parsing.exe.config
+C:\Users\Stepan\Source\Repos\pbn\SB Parsing\SB Parsing\bin\Debug\SB Parsing.exe
+C:\Users\Stepan\Source\Repos\pbn\SB Parsing\SB Parsing\bin\Debug\SB Parsing.pdb
+C:\Users\Stepan\Source\Repos\pbn\SB Parsing\SB Parsing\bin\Debug\HtmlAgilityPack.dll
+C:\Users\Stepan\Source\Repos\pbn\SB Parsing\SB Parsing\bin\Debug\HtmlAgilityPack.pdb
+C:\Users\Stepan\Source\Repos\pbn\SB Parsing\SB Parsing\bin\Debug\HtmlAgilityPack.xml
+C:\Users\Stepan\Source\Repos\pbn\SB Parsing\SB Parsing\obj\Debug\SB Parsing.csprojAssemblyReference.cache
+C:\Users\Stepan\Source\Repos\pbn\SB Parsing\SB Parsing\obj\Debug\SB Parsing.csproj.CoreCompileInputs.cache
+C:\Users\Stepan\Source\Repos\pbn\SB Parsing\SB Parsing\obj\Debug\SB Parsing.csproj.CopyComplete
+C:\Users\Stepan\Source\Repos\pbn\SB Parsing\SB Parsing\obj\Debug\SB Parsing.exe
+C:\Users\Stepan\Source\Repos\pbn\SB Parsing\SB Parsing\obj\Debug\SB Parsing.pdb

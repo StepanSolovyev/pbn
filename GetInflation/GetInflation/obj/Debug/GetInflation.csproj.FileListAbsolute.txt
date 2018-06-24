@@ -5,3 +5,10 @@ C:\Users\ikuligina\Documents\Visual Studio 2017\Projects\GetInflation\GetInflati
 C:\Users\ikuligina\Documents\Visual Studio 2017\Projects\GetInflation\GetInflation\obj\Debug\GetInflation.csproj.CoreCompileInputs.cache
 C:\Users\ikuligina\Documents\Visual Studio 2017\Projects\GetInflation\GetInflation\obj\Debug\GetInflation.exe
 C:\Users\ikuligina\Documents\Visual Studio 2017\Projects\GetInflation\GetInflation\obj\Debug\GetInflation.pdb
+C:\Users\Stepan\Source\Repos\pbn\GetInflation\GetInflation\obj\Debug\GetInflation.csprojAssemblyReference.cache
+C:\Users\Stepan\Source\Repos\pbn\GetInflation\GetInflation\obj\Debug\GetInflation.csproj.CoreCompileInputs.cache
+C:\Users\Stepan\Source\Repos\pbn\GetInflation\GetInflation\obj\Debug\GetInflation.exe
+C:\Users\Stepan\Source\Repos\pbn\GetInflation\GetInflation\obj\Debug\GetInflation.pdb
+C:\Users\Stepan\Source\Repos\pbn\GetInflation\GetInflation\bin\Debug\GetInflation.exe.config
+C:\Users\Stepan\Source\Repos\pbn\GetInflation\GetInflation\bin\Debug\GetInflation.exe
+C:\Users\Stepan\Source\Repos\pbn\GetInflation\GetInflation\bin\Debug\GetInflation.pdb
