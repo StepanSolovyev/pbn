@@ -7,7 +7,7 @@ using HtmlAgilityPack;
 
 namespace OFZ
 {
-    public struct emitent
+    public struct maintable
     {
         public int emit;
         public string name;//наименование
@@ -16,22 +16,34 @@ namespace OFZ
         public string sector; //сектор
         public string eregion; //регион
         public string data; //дата
+        public ulong inn;
         //public emitent(int emitid)
         //{
         //    emit = emitid;
         //    name = "";
         //    sector = "";
         //    eregion = "";
-       //     inn = 0;
+        //     inn = 0;
 
         //}
     }
-    //class ACRAMainParser
-    //{
-       
-       // HtmlAgilityPack.HtmlWeb webmain = new HtmlWeb();
+    class ACRAMainParser
+    {
+        public maintable GetMainData(string url)
+        {
+            maintable MTable = new maintable();
+            string XP = "https://www.acra-ratings.ru/ratings/issuers/" + idemitent;
 
-       //public HtmlAgilityPack.HtmlDocument docmain = webmain.Load("https://www.acra-ratings.ru/ratings/issuers?order=press_release&page=1&sort=desc");
+            HtmlAgilityPack.HtmlWeb webMT = new HtmlWeb();
+            webMT.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
+            HtmlAgilityPack.HtmlDocument docMT = webMT.Load(XP);
+            Emit.emit = int.Parse(idemitent);
+            Emit.inn = ulong.Parse(doc1.DocumentNode.SelectSingleNode("/html/body/div/div[3]/div/section[2]/div/div/div[1]/div[3]/span[2]").InnerText.Replace(" ", ""));
+            return (Emit);
+        }
+        // HtmlAgilityPack.HtmlWeb webmain = new HtmlWeb();
+
+        //public HtmlAgilityPack.HtmlDocument docmain = webmain.Load("https://www.acra-ratings.ru/ratings/issuers?order=press_release&page=1&sort=desc");
 
         //var featuredArticle = doc.DocumentNode.SelectSingleNode("/html/body/div[1]/section[2]/div/div/p/text()");
         //*[@id="search-results"]/div/section/table/tbody/tr[1]/td[2]/span[2]
@@ -40,17 +52,6 @@ namespace OFZ
         //var featuredArticle = doc.DocumentNode.SelectSingleNode("/html/body/div/div[5]/div/table/tbody//tr");
         //Console.WriteLine(featuredArticle.InnerHtml);
         //Console.ReadKey();
-    //}
+        //}
+    }
 }
- int i = 1;
-            do
-            {
-                HtmlAgilityPack.HtmlWeb web1 = new HtmlWeb();
-HtmlAgilityPack.HtmlDocument doc1 = web1.Load("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=" + i + "&sort=desc");
-var far = doc1.DocumentNode.SelectSingleNode("/html/body/div[1]/div[5]/div/section/span");
-string End = far.InnerHtml;
-Console.WriteLine(far.InnerHtml);
-                Console.WriteLine("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=" + i + "&sort=desc");
-                i = i + 1;
-            }
-            while (i != 6);

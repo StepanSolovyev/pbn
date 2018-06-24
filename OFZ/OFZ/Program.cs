@@ -11,6 +11,28 @@ namespace OFZ
     {
         static void Main(string[] args)
         {
+            int i = 1;
+            //string enddo = "";
+            do
+            {
+                HtmlAgilityPack.HtmlWeb web1 = new HtmlWeb();
+                HtmlAgilityPack.HtmlDocument doc1 = web1.Load("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=" + i + "&sort=desc");
+                try
+                {
+                    var far = doc1.DocumentNode.SelectSingleNode("/html/body/div[1]/div[5]/div/section/span");
+                    string enddo = far.InnerHtml;
+                    Console.WriteLine(enddo);
+                    Console.WriteLine("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=" + i + "&sort=desc");
+                    i = i + 1;
+                }
+                catch (Exception)                {
+                    //Console.WriteLine("End of table: '{0}'", e);
+                    break;
+                }   
+                               
+            }
+            while (i != 100);
+
             ACRAParser Parser = new ACRAParser();
             string emitentnamber = "54";
             
