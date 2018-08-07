@@ -17,6 +17,7 @@ namespace ACRA
         public string eregion;
         public string data;
         public ulong inn;
+       
         public emitent(int emitid)
         {
             emit = emitid;
@@ -32,8 +33,19 @@ namespace ACRA
     }
     public class ACRAParser
     {
-        public emitent GetEmitentData(string idemitent)
+        //получение общего числа документов из строки вида "Найдено документов: 155":
+        public int GetMAX(string URL)
         {
+            HtmlAgilityPack.HtmlWeb web2 = new HtmlWeb();
+            HtmlAgilityPack.HtmlDocument doc2 = web2.Load(URL);
+            int allpage = int.Parse((doc2.DocumentNode.SelectSingleNode("/html/body/div[1]/div[5]/div/section/span")).InnerHtml.Split(' ')[2]);
+            return (allpage);
+        }
+        public emitent GetEmitentData(string idemitent)
+        {  
+            
+
+            //определение значения ИНН эмитента с учетом разного вида отображния на странице (указан только ИНН, указан ИНН и БИК)
             emitent Emit = new emitent();
             string XP = "https://www.acra-ratings.ru/ratings/issuers/" + idemitent;
 
@@ -55,10 +67,12 @@ namespace ACRA
             { }
             return (Emit);
         }
-
+        
         public emitent[] Start()
         {
-            emitent[] Emits = new emitent[155]; 
+            
+
+            emitent[] Emits = new emitent[this.GetMAX("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=1&sort=desc")]; 
             int num = 1;
             int i = 1;
             int j = 0;
@@ -68,10 +82,11 @@ namespace ACRA
                 //URL адрес с изменяемым порядковым номером страницы i
                 HtmlAgilityPack.HtmlDocument doc1 = web1.Load("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=" + i + "&sort=desc");
                 try
-                {
+                {   //проверка наличия строки "Найдено документов: 155"
                     var far = doc1.DocumentNode.SelectSingleNode("/html/body/div[1]/div[5]/div/section/span");
-                    string enddo = far.InnerHtml; //строка с общим количеством документов вида "Найдено документов: 155"
-                                                  //Console.WriteLine(enddo);
+                    string enddo = far.InnerHtml;
+                    
+                    //Console.WriteLine(enddo);
 #if DEBUG
                     Console.WriteLine("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=" + i + "&sort=desc");
 #endif

@@ -14,7 +14,7 @@ namespace OFZ
     class Program
     {
         static void Main(string[] args)
-        {
+        {                                
             ACRAParser parser = new ACRAParser();
             emitent[] Test = parser.Start();
             foreach (emitent item in Test)
