@@ -41,6 +41,23 @@ namespace ACRA
             int allpage = int.Parse((doc2.DocumentNode.SelectSingleNode("/html/body/div[1]/div[5]/div/section/span")).InnerHtml.Split(' ')[2]);
             return (allpage);
         }
+
+        //получение числа строк в таблице на странице
+        public int GetLinesOfPage(string URL)
+        {
+            HtmlAgilityPack.HtmlWeb webLine = new HtmlWeb();
+            HtmlAgilityPack.HtmlDocument docLine = webLine.Load(URL);
+            int nline = 1;
+            try
+            {
+                string farLine = (docLine.DocumentNode.SelectSingleNode(URL)).InnerHtml;
+                
+            }
+            catch { }
+
+            return (nline);
+        }
+
         public emitent GetEmitentData(string idemitent)
         {  
             
@@ -90,10 +107,12 @@ namespace ACRA
 #if DEBUG
                     Console.WriteLine("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=" + i + "&sort=desc");
 #endif
-                    //сюда вставить выгрузку данных из таблицы
+                    //выгрузка данных из таблицы постранично
                     HtmlAgilityPack.HtmlWeb webALL1 = new HtmlWeb();
 
                     HtmlAgilityPack.HtmlDocument docALL1 = webALL1.Load("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=" + i + "&sort=desc");
+
+
 
                     do
                     {
@@ -103,6 +122,9 @@ namespace ACRA
 #if DEBUG
                                 Console.WriteLine(num);
 #endif
+                                //печать nline
+                                Console.WriteLine("nline:", this.GetLinesOfPage("/html/body/div[1]/div[5]/div[1]/section/table/tbody/tr[" + num + "]"));
+
                                 HtmlNode NumInTable = row.SelectSingleNode("td[1]/a"); //наименование
                                 Emits[j].name = NumInTable.InnerText;
                                 //Console.WriteLine(NumInTable.InnerText);
