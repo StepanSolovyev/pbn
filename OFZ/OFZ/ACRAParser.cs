@@ -43,18 +43,23 @@ namespace ACRA
         }
 
         //получение числа строк в таблице на странице
-        public int GetLinesOfPage(string URL)
+        int nline = 1;
+        public int GetLinesOfPage(int num)
         {
             HtmlAgilityPack.HtmlWeb webLine = new HtmlWeb();
-            HtmlAgilityPack.HtmlDocument docLine = webLine.Load(URL);
-            int nline = 1;
-            try
-            {
-                string farLine = (docLine.DocumentNode.SelectSingleNode(URL)).InnerHtml;
-                
-            }
-            catch { }
+            HtmlAgilityPack.HtmlDocument docLine = webLine.Load("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=1&sort=desc");
+            //int nline = 1;
+            
+            
+                try
+                {
+                    string farLine = (docLine.DocumentNode.SelectSingleNode("/html/body/div[1]/div[5]/div[1]/section/table/tbody/tr[" + num + "]/td/a")).InnerHtml;
+                    nline++;
+                }
 
+                catch { }
+            
+            //while (nline != 200);
             return (nline);
         }
 
@@ -122,9 +127,7 @@ namespace ACRA
 #if DEBUG
                                 Console.WriteLine(num);
 #endif
-                                //печать nline
-                                Console.WriteLine("nline:", this.GetLinesOfPage("/html/body/div[1]/div[5]/div[1]/section/table/tbody/tr[" + num + "]"));
-
+                                Console.WriteLine("nline:", this.GetLinesOfPage(num));
                                 HtmlNode NumInTable = row.SelectSingleNode("td[1]/a"); //наименование
                                 Emits[j].name = NumInTable.InnerText;
                                 //Console.WriteLine(NumInTable.InnerText);
@@ -155,6 +158,8 @@ namespace ACRA
                                 //Console.WriteLine(Parser.GetEmitentData(emitentnamber).inn);
                                 //Console.WriteLine(resultINN);
                                 num = num + 1;
+                                
+                                //Console.WriteLine("nline:", this.GetLinesOfPage(num));
                             }
                         j++; //счетчик элементов массива ()
                     }
@@ -171,8 +176,10 @@ namespace ACRA
                 }
             }
             while (i != 100);
+           // Console.WriteLine("nline:", this.GetLinesOfPage("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=1&sort=desc"));
             return (Emits);
         }
 
     }
 }
+//"/html/body/div[1]/div[5]/div[1]/section/table/tbody/tr[" + num + "]/td/a"
