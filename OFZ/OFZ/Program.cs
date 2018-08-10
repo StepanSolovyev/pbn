@@ -17,6 +17,7 @@ namespace OFZ
         {                                
             ACRAParser parser = new ACRAParser();
             emitent[] Test = parser.Start();
+            
             foreach (emitent item in Test)
             {
                 Console.WriteLine(item.name +" " + item.inn);

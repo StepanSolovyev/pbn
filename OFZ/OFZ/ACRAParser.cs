@@ -33,7 +33,7 @@ namespace ACRA
     }
     public class ACRAParser
     {
-        //получение общего числа документов из строки вида "Найдено документов: 155":
+        //получение общего числа эмитентов из строки вида "Найдено документов: 155":
         public int GetMAX(string URL)
         {
             HtmlAgilityPack.HtmlWeb web2 = new HtmlWeb();
@@ -43,30 +43,32 @@ namespace ACRA
         }
 
         //получение числа строк в таблице на странице
-        int nline = 1;
-        public int GetLinesOfPage(int num)
+       
+        public int GetLinesOfPage(string URL)
         {
             HtmlAgilityPack.HtmlWeb webLine = new HtmlWeb();
-            HtmlAgilityPack.HtmlDocument docLine = webLine.Load("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=1&sort=desc");
-            //int nline = 1;
-            
+            HtmlAgilityPack.HtmlDocument docLine = webLine.Load(URL);
+            int nline = 0;
+            int k = 1;
             
                 try
                 {
-                    string farLine = (docLine.DocumentNode.SelectSingleNode("/html/body/div[1]/div[5]/div[1]/section/table/tbody/tr[" + num + "]/td/a")).InnerHtml;
-                    nline++;
-                }
-
+                    do
+                    {
+                        string farLine = (docLine.DocumentNode.SelectSingleNode("/html/body/div[1]/div[5]/div[1]/section/table/tbody/tr[" + k + "]/td/a")).InnerHtml;
+                        nline++;
+                        k++;
+                    }
+                    while (k != 200); //сравнение с общим числом эмитентов или с this.GetMAX("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=1&sort=desc")
+            }
+                
                 catch { }
             
-            //while (nline != 200);
-            return (nline);
+         return (nline);
         }
 
         public emitent GetEmitentData(string idemitent)
         {  
-            
-
             //определение значения ИНН эмитента с учетом разного вида отображния на странице (указан только ИНН, указан ИНН и БИК)
             emitent Emit = new emitent();
             string XP = "https://www.acra-ratings.ru/ratings/issuers/" + idemitent;
@@ -94,10 +96,12 @@ namespace ACRA
         {
             
 
-            emitent[] Emits = new emitent[this.GetMAX("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=1&sort=desc")]; 
+            emitent[] Emits = new emitent[this.GetMAX("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=1&sort=desc")];//определение размера масива структур (общее количесто эмитентов) 
             int num = 1;
             int i = 1;
             int j = 0;
+
+            this.GetLinesOfPage("https://www.acra-ratings.ru/ratings/issuers");//получение количества строк на первой странице (nline)
             do
             {
                 HtmlAgilityPack.HtmlWeb web1 = new HtmlWeb();
@@ -108,7 +112,6 @@ namespace ACRA
                     var far = doc1.DocumentNode.SelectSingleNode("/html/body/div[1]/div[5]/div/section/span");
                     string enddo = far.InnerHtml;
                     
-                    //Console.WriteLine(enddo);
 #if DEBUG
                     Console.WriteLine("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=" + i + "&sort=desc");
 #endif
@@ -116,9 +119,7 @@ namespace ACRA
                     HtmlAgilityPack.HtmlWeb webALL1 = new HtmlWeb();
 
                     HtmlAgilityPack.HtmlDocument docALL1 = webALL1.Load("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=" + i + "&sort=desc");
-
-
-
+                                                            
                     do
                     {
                         foreach (HtmlNode row in docALL1.DocumentNode.SelectNodes("/html/body/div[1]/div[5]/div[1]/section/table/tbody/tr[" + num + "]"))
@@ -127,7 +128,7 @@ namespace ACRA
 #if DEBUG
                                 Console.WriteLine(num);
 #endif
-                                Console.WriteLine("nline:", this.GetLinesOfPage(num));
+                             
                                 HtmlNode NumInTable = row.SelectSingleNode("td[1]/a"); //наименование
                                 Emits[j].name = NumInTable.InnerText;
                                 //Console.WriteLine(NumInTable.InnerText);
@@ -158,13 +159,12 @@ namespace ACRA
                                 //Console.WriteLine(Parser.GetEmitentData(emitentnamber).inn);
                                 //Console.WriteLine(resultINN);
                                 num = num + 1;
-                                
-                                //Console.WriteLine("nline:", this.GetLinesOfPage(num));
+                                                                
                             }
                         j++; //счетчик элементов массива ()
                     }
 
-                    while (num != 13);
+                    while (num <= this.GetLinesOfPage("https://www.acra-ratings.ru/ratings/issuers")); //проверка конца массива строк на странице
                     i = i + 1;//счетчик страниц
                     num = 1;//счетчик строк
                     
@@ -175,11 +175,10 @@ namespace ACRA
                     break;
                 }
             }
-            while (i != 100);
-           // Console.WriteLine("nline:", this.GetLinesOfPage("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=1&sort=desc"));
+            while (i != 100);//заведомо большое число страниц
+           
             return (Emits);
         }
 
     }
 }
-//"/html/body/div[1]/div[5]/div[1]/section/table/tbody/tr[" + num + "]/td/a"
