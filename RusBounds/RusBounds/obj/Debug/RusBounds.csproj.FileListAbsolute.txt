@@ -41,3 +41,13 @@ E:\kuligina\VSGitRepoz\pbn\RusBounds\RusBounds\bin\Debug\HtmlAgilityPack.pdb
 E:\kuligina\VSGitRepoz\pbn\RusBounds\RusBounds\bin\Debug\HtmlAgilityPack.xml
 E:\kuligina\VSGitRepoz\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.csproj.CopyComplete
 E:\kuligina\VSGitRepoz\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.csprojAssemblyReference.cache
+C:\Users\ikuligina\pbn\RusBounds\RusBounds\bin\Debug\RusBounds.exe.config
+C:\Users\ikuligina\pbn\RusBounds\RusBounds\bin\Debug\RusBounds.exe
+C:\Users\ikuligina\pbn\RusBounds\RusBounds\bin\Debug\RusBounds.pdb
+C:\Users\ikuligina\pbn\RusBounds\RusBounds\bin\Debug\HtmlAgilityPack.dll
+C:\Users\ikuligina\pbn\RusBounds\RusBounds\bin\Debug\HtmlAgilityPack.pdb
+C:\Users\ikuligina\pbn\RusBounds\RusBounds\bin\Debug\HtmlAgilityPack.xml
+C:\Users\ikuligina\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.csprojResolveAssemblyReference.cache
+C:\Users\ikuligina\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.csproj.CoreCompileInputs.cache
+C:\Users\ikuligina\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.exe
+C:\Users\ikuligina\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.pdb
