@@ -89,7 +89,7 @@ namespace RusBounds
             }
             catch { }
             Console.WriteLine("pageN: ");
-            Console.WriteLine(pageN);
+          //  Console.WriteLine(pageN);
 
             return (pageN);//номер последней страницы (int)
         }                 
@@ -105,13 +105,14 @@ namespace RusBounds
             {
                 do
                 {
-                    string farLine = (docLine.DocumentNode.SelectSingleNode("/html/body/div[1]/div[1]/table[2]/tbody/tr[" + k + "]/td[2]/a")).InnerHtml;
+                    string farLine = (docLine.DocumentNode.SelectSingleNode("/html/body/div[1]/table[2]/tbody/tr[" + k + "]/td[2]/a")).InnerHtml;
                     nline++;
                     k++;
                 }
                 while (k != 200); //сравнение с общим числом эмитентов или с this.GetMAX("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=1&sort=desc")
             }
             catch { }
+            Console.WriteLine("nline: ");
             return (nline);
         } 
 
