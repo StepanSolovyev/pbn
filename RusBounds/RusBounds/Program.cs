@@ -15,17 +15,21 @@ namespace OFZ
             
 
             RBParser Parser = new RBParser();
-            string emitentnamber = "6874";
+            //string emitentnamber = "6874";
 
-            //RusB = featuredArticle.GetAttributeValue("href", null);
-            Console.WriteLine(Parser.GetEmitentData(emitentnamber).inn);
+            //Console.WriteLine(Parser.GetEmitentData(emitentnamber).inn);
             Console.WriteLine(Parser.GetPageN("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt"));
             Console.WriteLine(Parser.GetLinesOfPage("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt"));
 
             Console.ReadKey();
+            emitentMain[] Test = Parser.Start();
 
-            //IHtmlDocument angle = new HtmlParser(html).Parse();
-            //Наименование:Министерство финансов Российской ФедерацииОсновной ОКВЭД:Управление финансовой деятельностью и деятельностью в сфере налогообложенияСтрана:РОССИЯРегион:г.МоскваИНН:7710168360    
+            foreach (emitentMain item in Test)
+            {
+                Console.WriteLine(item.Issuer + " " + item.inn);
+
+            }
+            Console.ReadLine();
         }
 
     }
