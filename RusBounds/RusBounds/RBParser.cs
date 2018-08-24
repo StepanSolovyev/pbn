@@ -168,21 +168,26 @@ namespace RusBounds
                 int i = 1;
                 int j = 0;
                 this.GetLinesOfPage("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt");//получение количества строк на первой странице (nline)
+                int MP = this.GetLinesOfPage("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt");
                 do
                 {
                     HtmlAgilityPack.HtmlWeb web1 = new HtmlWeb();
-                    //URL адрес с изменяемым порядковым номером страницы i
-                    HtmlAgilityPack.HtmlDocument doc1 = web1.Load("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt" + i + "#rslt");
+                    web1.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
+                   //URL адрес с изменяемым порядковым номером страницы i
+                    HtmlAgilityPack.HtmlDocument doc1 = web1.Load("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + i + "#rslt");
+                   
                     try
                     {   //проверка наличия строки "Найдено документов: 155"
-                        var far = doc1.DocumentNode.SelectSingleNode("/html/body/div[1]/div[5]/div/section/span");
-                        string enddo = far.InnerHtml;
+                        //var far = doc1.DocumentNode.SelectSingleNode("/html/body/div[1]/div[5]/div/section/span");
+                        //string enddo = far.InnerHtml;
 #if DEBUG
-                        Console.WriteLine("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt" + i + "#rslt");
+                       // Console.WriteLine("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + i + "#rslt");
 #endif
                         //выгрузка данных из таблицы постранично
                         HtmlAgilityPack.HtmlWeb webALL1 = new HtmlWeb();
-                        HtmlAgilityPack.HtmlDocument docALL1 = webALL1.Load("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt" + i + "#rslt");
+                        webALL1.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
+                        HtmlAgilityPack.HtmlDocument docALL1 = webALL1.Load("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + i + "#rslt");
+                       
                         do
                         {
                             foreach (HtmlNode row in docALL1.DocumentNode.SelectNodes("/html/body/div[1]/table[2]/tbody/tr[" + num + "]"))
@@ -196,30 +201,88 @@ namespace RusBounds
                                     //Console.WriteLine(NumInTable.InnerText);
                                     HtmlNode IssuerInTable = row.SelectSingleNode("td[2]/a");//Название Эмитента
                                     EmitM[j].Issuer = IssuerInTable.InnerText;
-                                    //Console.WriteLine(TimeOfBound.InnerText);
+                                //Console.WriteLine(TimeOfBound.InnerText);
+                                try
+                                {
                                     HtmlNode RegionInTable = row.SelectSingleNode("td[3]");//Регион
                                     EmitM[j].Region = RegionInTable.InnerText;
-                                    //Console.WriteLine(NameOfBound.InnerText);
-                                    HtmlNode CharterCapitalInTable = row.SelectSingleNode("td[4]"); // Уставной капитал  (1000 RUB - вытягивать 1000)
-                                    EmitM[j].CharterCapital = ulong.Parse(CharterCapitalInTable.InnerText);
-                                    //Console.WriteLine(redemption.InnerText);
-                                    HtmlNode CCСInTable = row.SelectSingleNode("td[4]"); // валюта уставного капитала (1000 RUB - вытягивать RUB)
-                                    EmitM[j].CharterCapitalСurrency = CCСInTable.InnerText;
-                                    //Console.WriteLine(YearsToRedemption.InnerText);
+                                }
+                                catch
+                                {
+                                    EmitM[j].Region = "";
+                                }
+                                //Console.WriteLine(NameOfBound.InnerText);
+                                try
+                                {
+                                    HtmlNode CharterCapitalInTable = row.SelectSingleNode("td[4]");
+                                    if (CharterCapitalInTable.InnerText == "&nbsp;")
+                                    {
+                                        EmitM[j].CharterCapital = 0; // Уставной капитал  (1000 RUB - вытягивать 1000)
+                                        EmitM[j].CharterCapitalСurrency = ""; // валюта уставного капитала (1000 RUB - вытягивать RUB)}
+                                    }
+                                    else
+                                    {                                      
+                                    EmitM[j].CharterCapital = ulong.Parse(CharterCapitalInTable.InnerText.Split('R')[0].Replace(" ", String.Empty)); // удаляем пробелы из числа
+                                    EmitM[j].CharterCapitalСurrency = "R" + CharterCapitalInTable.InnerText.Split('R')[1]; //  вытягиваем RUB
+                                    }
+                                }
+                                catch
+                                {
+                                    EmitM[j].CharterCapital = 0;
+                                }
+                                //Console.WriteLine(redemption.InnerText);
+                                try
+                                {
                                     HtmlNode DLCntInTable = row.SelectSingleNode("td[5]");// внутренние займы(кол-во)
                                     EmitM[j].DomesticLoansCnt = int.Parse(DLCntInTable.InnerText);
+                                }
+                                catch
+                                {
+                                    EmitM[j].DomesticLoansCnt = 0;
+                                }
+                                try
+                                {
                                     HtmlNode DLСurInTable = row.SelectSingleNode("td[6]");// Внутренние займы(объем RUB)
-                                    EmitM[j].DomesticLoansСurrency = ulong.Parse(DLСurInTable.InnerText);
+
+                                    EmitM[j].DomesticLoansСurrency = ulong.Parse(DLСurInTable.InnerText.Replace(" ", string.Empty));                               
+                                      
+                                }
+                                catch
+                                { EmitM[j].DomesticLoansСurrency = 0; }
+                                try
+                                {
                                     HtmlNode FLCntInTable = row.SelectSingleNode("td[7]");// внешние займы(кол-во)
-                                    EmitM[j].ForeignLoansCnt = int.Parse(FLCntInTable.InnerText);
+                                    if (FLCntInTable.InnerText == "&nbsp;")
+                                    {
+                                        EmitM[j].ForeignLoansCnt = 0; // внешние займы(кол-во)
+                                    }
+                                    else
+                                    {
+                                        EmitM[j].ForeignLoansCnt = int.Parse(FLCntInTable.InnerText); // удаляем пробелы из числа
+                                    }
+                                   
+                                }
+                                catch { EmitM[j].ForeignLoansCnt = 0; }
+                                try
+                                {
                                     HtmlNode FLСurInTable = row.SelectSingleNode("td[8]");// внешние займы(объем USD)
-                                    EmitM[j].ForeignLoansСurrency = ulong.Parse(FLСurInTable.InnerText);
+                                    if (FLСurInTable.InnerText == "&nbsp;")
+                                    {
+                                        EmitM[j].ForeignLoansСurrency = 0;
+                                    }
+                                    else
+                                    {
+                                        EmitM[j].ForeignLoansСurrency = ulong.Parse(FLСurInTable.InnerText.Replace(" ", string.Empty));
+                                    }
+                                }
+                                catch { EmitM[j].ForeignLoansСurrency = 0; }
+
                                     HtmlNode RatingInTable = row.SelectSingleNode("td[9]"); // рейтинг
                                     EmitM[j].Rating = RatingInTable.InnerText;
 
                                     HtmlNode mhref = row.SelectSingleNode("td[2]/a");// ссылка  http://www.rusbonds.ru/ank_org.asp?emit=78881
                                     string INN = mhref.GetAttributeValue("href", null);
-                                    string resultINN = INN.Split('=')[2];
+                                    string resultINN = INN.Split('=')[1];
                                     RBParser Parser = new RBParser();
                                     string emitentnamber = resultINN;
                                     EmitM[j].inn = Parser.GetEmitentData(emitentnamber).inn;
@@ -229,7 +292,7 @@ namespace RusBounds
                                 }
                             j++; //счетчик элементов массива ()
                         }
-                        while (num <= this.GetLinesOfPage("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt")); //проверка конца массива строк на странице
+                        while (num <= MP); //проверка конца массива строк на странице
                         i = i + 1;//счетчик страниц
                         num = 1;//счетчик строк
                     }
