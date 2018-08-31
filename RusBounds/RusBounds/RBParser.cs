@@ -148,162 +148,187 @@ namespace RusBounds
 
         public emitent GetEmitentData(string idemitent)
         {
-                emitent Emit = new emitent();
-                string XP = "http://www.rusbonds.ru/ank_org.asp?emit=" + idemitent;
-                //RusB = featuredArticle.GetAttributeValue("href", null);
+            emitent Emit = new emitent();
+            string XP = "http://www.rusbonds.ru/ank_org.asp?emit=" + idemitent;
+            //RusB = featuredArticle.GetAttributeValue("href", null);
 
-                HtmlAgilityPack.HtmlWeb web1 = new HtmlWeb();
-                web1.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
-                HtmlAgilityPack.HtmlDocument doc1 = web1.Load(XP);
-                Emit.emit = int.Parse(idemitent);
+            HtmlAgilityPack.HtmlWeb web1 = new HtmlWeb();
+            web1.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
+            HtmlAgilityPack.HtmlDocument doc1 = web1.Load(XP);
+            Emit.emit = int.Parse(idemitent);
+            Emit.inn = 0;
+            try
+            {
                 Emit.inn = ulong.Parse(doc1.DocumentNode.SelectSingleNode("/html//body/table[4]//tbody/tr[6]/td[2]").InnerText.Replace(" ", ""));
-                return (Emit);
+            }
+            catch
+            {
+                if (Emit.inn == 0)
+                {
+                    try
+                    {
+                        Emit.inn = ulong.Parse(doc1.DocumentNode.SelectSingleNode("/html//body/table[4]//tbody/tr[7]/td[2]").InnerText.Replace(" ", ""));
+                    }
+                    catch
+                    { Emit.inn = 0; }
+                    
+                }
+            }
+            return (Emit);
          }
 
         public emitentMain[] Start()
 
-        {
-                emitentMain[] EmitM = new emitentMain[this.GetPageN("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt1#rslt")];//определение размера масива структур (общее количесто эмитентов) this.GetPageN("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt1#rslt")
-                int num = 1;
-                int i = 1;
-                int j = 0;
-                this.GetLinesOfPage("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt");//получение количества строк на первой странице (nline)
-                int MP = this.GetLinesOfPage("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt");
-                do
-                {
-                    HtmlAgilityPack.HtmlWeb web1 = new HtmlWeb();
-                    web1.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
-                   //URL адрес с изменяемым порядковым номером страницы i
-                    HtmlAgilityPack.HtmlDocument doc1 = web1.Load("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + i + "#rslt");
+    {
+            int cntpage = this.GetPageN("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt1#rslt"); //определние кол-ва страниц
+            int MP = this.GetLinesOfPage("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt");//получение количества строк на первой странице (nline)
+            Console.WriteLine(MP *cntpage);
+
+            emitentMain[] EmitM = new emitentMain[MP * cntpage];//определение размера масива структур (общее количесто эмитентов) this.GetPageN("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt1#rslt")
+            int num = 1;
+            int i = 1;
+            int j = 0;
+            
+            do
+            {
+                HtmlAgilityPack.HtmlWeb web1 = new HtmlWeb();
+                web1.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
+                //URL адрес с изменяемым порядковым номером страницы i
+                HtmlAgilityPack.HtmlDocument doc1 = web1.Load("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + i + "#rslt");
                    
-                    try
-                    {   //проверка наличия строки "Найдено документов: 155"
-                        //var far = doc1.DocumentNode.SelectSingleNode("/html/body/div[1]/div[5]/div/section/span");
-                        //string enddo = far.InnerHtml;
+                try
+                {   //проверка наличия строки "Найдено документов: 155"
+                    //var far = doc1.DocumentNode.SelectSingleNode("/html/body/div[1]/div[5]/div/section/span");
+                    //string enddo = far.InnerHtml;
 #if DEBUG
-                       // Console.WriteLine("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + i + "#rslt");
+                    // Console.WriteLine("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + i + "#rslt");
 #endif
-                        //выгрузка данных из таблицы постранично
-                        HtmlAgilityPack.HtmlWeb webALL1 = new HtmlWeb();
-                        webALL1.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
-                        HtmlAgilityPack.HtmlDocument docALL1 = webALL1.Load("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + i + "#rslt");
+                    //выгрузка данных из таблицы постранично
+                    HtmlAgilityPack.HtmlWeb webALL1 = new HtmlWeb();
+                    webALL1.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
+                    HtmlAgilityPack.HtmlDocument docALL1 = webALL1.Load("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + i + "#rslt");
                        
-                        do
-                        {
-                            foreach (HtmlNode row in docALL1.DocumentNode.SelectNodes("/html/body/div[1]/table[2]/tbody/tr[" + num + "]"))
-                                if (row != null)
-                                {
+                    do
+                    {
+                        foreach (HtmlNode row in docALL1.DocumentNode.SelectNodes("/html/body/div[1]/table[2]/tbody/tr[" + num + "]"))
+                            if (row != null)
+                            {
 #if DEBUG
-                                    Console.WriteLine(num);
+                                Console.WriteLine(num);
 #endif
-                                    HtmlNode IndustryInTable = row.SelectSingleNode("td[1]"); //Отрасль
-                                    EmitM[j].Industry = IndustryInTable.InnerText;
-                                    //Console.WriteLine(NumInTable.InnerText);
-                                    HtmlNode IssuerInTable = row.SelectSingleNode("td[2]/a");//Название Эмитента
-                                    EmitM[j].Issuer = IssuerInTable.InnerText;
-                                //Console.WriteLine(TimeOfBound.InnerText);
-                                try
+                                HtmlNode IndustryInTable = row.SelectSingleNode("td[1]"); //Отрасль
+                                EmitM[j].Industry = IndustryInTable.InnerText;
+                                //Console.WriteLine(NumInTable.InnerText);
+                                HtmlNode IssuerInTable = row.SelectSingleNode("td[2]/a");//Название Эмитента
+                                EmitM[j].Issuer = IssuerInTable.InnerText;
+                            //Console.WriteLine(TimeOfBound.InnerText);
+                            try
+                            {
+                                HtmlNode RegionInTable = row.SelectSingleNode("td[3]");//Регион
+                                EmitM[j].Region = RegionInTable.InnerText;
+                                if (RegionInTable.InnerText == "&nbsp;")
                                 {
-                                    HtmlNode RegionInTable = row.SelectSingleNode("td[3]");//Регион
-                                    EmitM[j].Region = RegionInTable.InnerText;
+                                    EmitM[j].Region = " ";
                                 }
-                                catch
+                            }
+                            catch
+                            {
+                                EmitM[j].Region = "";
+                            }
+                            //Console.WriteLine(NameOfBound.InnerText);
+                            try
+                            {
+                                HtmlNode CharterCapitalInTable = row.SelectSingleNode("td[4]");
+                                if (CharterCapitalInTable.InnerText == "&nbsp;")
                                 {
-                                    EmitM[j].Region = "";
+                                    EmitM[j].CharterCapital = 0; // Уставной капитал  (1000 RUB - вытягивать 1000)
+                                    EmitM[j].CharterCapitalСurrency = ""; // валюта уставного капитала (1000 RUB - вытягивать RUB)}
                                 }
-                                //Console.WriteLine(NameOfBound.InnerText);
-                                try
-                                {
-                                    HtmlNode CharterCapitalInTable = row.SelectSingleNode("td[4]");
-                                    if (CharterCapitalInTable.InnerText == "&nbsp;")
-                                    {
-                                        EmitM[j].CharterCapital = 0; // Уставной капитал  (1000 RUB - вытягивать 1000)
-                                        EmitM[j].CharterCapitalСurrency = ""; // валюта уставного капитала (1000 RUB - вытягивать RUB)}
-                                    }
-                                    else
-                                    {                                      
-                                    EmitM[j].CharterCapital = ulong.Parse(CharterCapitalInTable.InnerText.Split('R')[0].Replace(" ", String.Empty)); // удаляем пробелы из числа
-                                    EmitM[j].CharterCapitalСurrency = "R" + CharterCapitalInTable.InnerText.Split('R')[1]; //  вытягиваем RUB
-                                    }
+                                else
+                                {                                      
+                                EmitM[j].CharterCapital = ulong.Parse(CharterCapitalInTable.InnerText.Split('R')[0].Replace(" ", String.Empty)); // удаляем пробелы из числа
+                                EmitM[j].CharterCapitalСurrency = "R" + CharterCapitalInTable.InnerText.Split('R')[1]; //  вытягиваем RUB
                                 }
-                                catch
-                                {
-                                    EmitM[j].CharterCapital = 0;
-                                }
-                                //Console.WriteLine(redemption.InnerText);
-                                try
-                                {
+                            }
+                            catch
+                            {
+                                EmitM[j].CharterCapital = 0;
+                            }
+                            //Console.WriteLine(redemption.InnerText);
+                            try
+                            {
                                     HtmlNode DLCntInTable = row.SelectSingleNode("td[5]");// внутренние займы(кол-во)
                                     EmitM[j].DomesticLoansCnt = int.Parse(DLCntInTable.InnerText);
-                                }
-                                catch
-                                {
-                                    EmitM[j].DomesticLoansCnt = 0;
-                                }
-                                try
-                                {
-                                    HtmlNode DLСurInTable = row.SelectSingleNode("td[6]");// Внутренние займы(объем RUB)
+                                    
+                            }
+                            catch
+                            {
+                                EmitM[j].DomesticLoansCnt = 0;
+                            }
+                            try
+                            {
+                                HtmlNode DLСurInTable = row.SelectSingleNode("td[6]");// Внутренние займы(объем RUB)
 
-                                    EmitM[j].DomesticLoansСurrency = ulong.Parse(DLСurInTable.InnerText.Replace(" ", string.Empty));                               
+                                EmitM[j].DomesticLoansСurrency = ulong.Parse(DLСurInTable.InnerText.Replace(" ", string.Empty));                               
                                       
-                                }
-                                catch
-                                { EmitM[j].DomesticLoansСurrency = 0; }
-                                try
+                            }
+                            catch
+                            { EmitM[j].DomesticLoansСurrency = 0; }
+                            try
+                            {
+                                HtmlNode FLCntInTable = row.SelectSingleNode("td[7]");// внешние займы(кол-во)
+                                if (FLCntInTable.InnerText == "&nbsp;")
                                 {
-                                    HtmlNode FLCntInTable = row.SelectSingleNode("td[7]");// внешние займы(кол-во)
-                                    if (FLCntInTable.InnerText == "&nbsp;")
-                                    {
-                                        EmitM[j].ForeignLoansCnt = 0; // внешние займы(кол-во)
-                                    }
-                                    else
-                                    {
-                                        EmitM[j].ForeignLoansCnt = int.Parse(FLCntInTable.InnerText); // удаляем пробелы из числа
-                                    }
+                                    EmitM[j].ForeignLoansCnt = 0; // внешние займы(кол-во)
+                                }
+                                else
+                                {
+                                    EmitM[j].ForeignLoansCnt = int.Parse(FLCntInTable.InnerText); // удаляем пробелы из числа
+                                }
                                    
-                                }
-                                catch { EmitM[j].ForeignLoansCnt = 0; }
-                                try
+                            }
+                            catch { EmitM[j].ForeignLoansCnt = 0; }
+                            try
+                            {
+                                HtmlNode FLСurInTable = row.SelectSingleNode("td[8]");// внешние займы(объем USD)
+                                if (FLСurInTable.InnerText == "&nbsp;")
                                 {
-                                    HtmlNode FLСurInTable = row.SelectSingleNode("td[8]");// внешние займы(объем USD)
-                                    if (FLСurInTable.InnerText == "&nbsp;")
-                                    {
-                                        EmitM[j].ForeignLoansСurrency = 0;
-                                    }
-                                    else
-                                    {
-                                        EmitM[j].ForeignLoansСurrency = ulong.Parse(FLСurInTable.InnerText.Replace(" ", string.Empty));
-                                    }
+                                    EmitM[j].ForeignLoansСurrency = 0;
                                 }
-                                catch { EmitM[j].ForeignLoansСurrency = 0; }
-
-                                    HtmlNode RatingInTable = row.SelectSingleNode("td[9]"); // рейтинг
-                                    EmitM[j].Rating = RatingInTable.InnerText;
-
-                                    HtmlNode mhref = row.SelectSingleNode("td[2]/a");// ссылка  http://www.rusbonds.ru/ank_org.asp?emit=78881
-                                    string INN = mhref.GetAttributeValue("href", null);
-                                    string resultINN = INN.Split('=')[1];
-                                    RBParser Parser = new RBParser();
-                                    string emitentnamber = resultINN;
-                                    EmitM[j].inn = Parser.GetEmitentData(emitentnamber).inn;
-                                    //Console.WriteLine(Parser.GetEmitentData(emitentnamber).inn);
-                                    //Console.WriteLine(resultINN);
-                                    num = num + 1;
+                                else
+                                {
+                                    EmitM[j].ForeignLoansСurrency = ulong.Parse(FLСurInTable.InnerText.Replace(" ", string.Empty));
                                 }
-                            j++; //счетчик элементов массива ()
-                        }
-                        while (num <= MP); //проверка конца массива строк на странице
-                        i = i + 1;//счетчик страниц
-                        num = 1;//счетчик строк
+                            }
+                            catch { EmitM[j].ForeignLoansСurrency = 0; }
+
+                                HtmlNode RatingInTable = row.SelectSingleNode("td[9]"); // рейтинг
+                                EmitM[j].Rating = RatingInTable.InnerText;
+
+                                HtmlNode mhref = row.SelectSingleNode("td[2]/a");// ссылка  http://www.rusbonds.ru/ank_org.asp?emit=78881
+                                string INN = mhref.GetAttributeValue("href", null);
+                                string resultINN = INN.Split('=')[1];
+                                RBParser Parser = new RBParser();
+                                string emitentnamber = resultINN;
+                                EmitM[j].inn = Parser.GetEmitentData(emitentnamber).inn;
+                                //Console.WriteLine(Parser.GetEmitentData(emitentnamber).inn);
+                                //Console.WriteLine(resultINN);
+                                num = num + 1;
+                            }
+                        j++; //счетчик элементов массива ()
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                        break;
-                    }
+                    while (num <= MP); //проверка конца массива строк на странице
+                    i = i + 1;//счетчик страниц
+                    num = 1;//счетчик строк
                 }
-                while (i != 300);//заведомо большое число страниц
-                return (EmitM);
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    break;
+                }
+            }
+            while (i != 300);//заведомо большое число страниц
+            return (EmitM);
          }
     }
     
