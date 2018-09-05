@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using HtmlAgilityPack;
+using System.Text.RegularExpressions;
 
 namespace RusBounds
 {
@@ -146,7 +147,7 @@ namespace RusBounds
                 return (nline);
             }
 
-        public emitent GetEmitentData(string idemitent)
+        public emitent GetEmitentData(string idemitent) //получение ИНН эмитента
         {
             emitent Emit = new emitent();
             string XP = "http://www.rusbonds.ru/ank_org.asp?emit=" + idemitent;
@@ -177,6 +178,37 @@ namespace RusBounds
             return (Emit);
          }
 
+        public string[] GetCapital(string Val) // получение числа уставного капитала до валюты
+        {
+            string pattern = "[A-Z]+";
+            //string input = "Abc1234Def5678Ghi9012Jklm";
+            string[] result = Regex.Split(Val, pattern,
+                                          RegexOptions.IgnoreCase);
+            for (int ctr = 0; ctr < result.Length; ctr++)
+            {
+                Console.Write("'{0}'", result[ctr]);
+                if (ctr < result.Length - 1)
+                    Console.Write(", ");
+            }
+            Console.WriteLine();
+            return (result);
+        }
+
+        public string[] Сurrency(string Val1)
+        {
+            string pattern = "[0-9]";
+            //string input = "Abc1234Def5678Ghi9012Jklm";
+            string[] result1 = Regex.Split(Val1, pattern,
+                                          RegexOptions.IgnoreCase);
+            for (int ctr = 0; ctr < result1.Length; ctr++)
+            {
+                Console.Write("'{0}'", result1[ctr]);
+                if (ctr < result1.Length - 1)
+                    Console.Write(", ");
+            }
+            Console.WriteLine();
+            return (result1);
+        }
         public emitentMain[] Start()
 
     {
@@ -184,7 +216,7 @@ namespace RusBounds
             int MP = this.GetLinesOfPage("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt");//получение количества строк на первой странице (nline)
             Console.WriteLine(MP *cntpage);
 
-            emitentMain[] EmitM = new emitentMain[MP * cntpage];//определение размера масива структур (общее количесто эмитентов) this.GetPageN("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt1#rslt")
+            emitentMain[] EmitM = new emitentMain[MP * cntpage];//определение размера масива структур (общее количесто эмитентов)
             int num = 1;
             int i = 1;
             int j = 0;
@@ -197,9 +229,7 @@ namespace RusBounds
                 HtmlAgilityPack.HtmlDocument doc1 = web1.Load("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + i + "#rslt");
                    
                 try
-                {   //проверка наличия строки "Найдено документов: 155"
-                    //var far = doc1.DocumentNode.SelectSingleNode("/html/body/div[1]/div[5]/div/section/span");
-                    //string enddo = far.InnerHtml;
+                {   
 #if DEBUG
                     // Console.WriteLine("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + i + "#rslt");
 #endif
@@ -245,20 +275,23 @@ namespace RusBounds
                                     EmitM[j].CharterCapitalСurrency = ""; // валюта уставного капитала (1000 RUB - вытягивать RUB)}
                                 }
                                 else
-                                {                                      
-                                EmitM[j].CharterCapital = ulong.Parse(CharterCapitalInTable.InnerText.Split('R')[0].Replace(" ", String.Empty)); // удаляем пробелы из числа
-                                EmitM[j].CharterCapitalСurrency = "R" + CharterCapitalInTable.InnerText.Split('R')[1]; //  вытягиваем RUB
-                                }
+                                {
+                                   string[] U = this.GetCapital(CharterCapitalInTable.InnerText); //вытягиваем число с пробелами из уставного капитала до букв валюты   
+                                   EmitM[j].CharterCapital = ulong.Parse(U[1].Replace(" ", String.Empty)); // удаляем пробелы из числа
+                                   this.Сurrency(CharterCapitalInTable.InnerText);
+                                   //string[] V = this.Сurrency(CharterCapitalInTable.InnerText); //вытягиваем валюту из уставного капитала
+                                   //EmitM[j].CharterCapitalСurrency = (V[1].Replace(" ", String.Empty)); // удаляем пробелы из числа
+                                    }
                             }
                             catch
                             {
-                                EmitM[j].CharterCapital = 0;
+                                  EmitM[j].CharterCapital = 0;
                             }
                             //Console.WriteLine(redemption.InnerText);
                             try
                             {
-                                    HtmlNode DLCntInTable = row.SelectSingleNode("td[5]");// внутренние займы(кол-во)
-                                    EmitM[j].DomesticLoansCnt = int.Parse(DLCntInTable.InnerText);
+                                  HtmlNode DLCntInTable = row.SelectSingleNode("td[5]");// внутренние займы(кол-во)
+                                  EmitM[j].DomesticLoansCnt = int.Parse(DLCntInTable.InnerText);
                                     
                             }
                             catch
