@@ -119,7 +119,7 @@ namespace RusBounds
                     while (j <= MAX);
                 }
                 catch { }
-                Console.WriteLine("pageN: ");
+                //Console.WriteLine("pageN: ");
                 //  Console.WriteLine(pageN);
 
                 return (pageN);//номер последней страницы (int)
@@ -143,7 +143,7 @@ namespace RusBounds
                     while (k != 200); //сравнение с общим числом эмитентов или с this.GetMAX("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=1&sort=desc")
                 }
                 catch { }
-                Console.WriteLine("nline: ");
+                //Console.WriteLine("nline: ");
                 return (nline);
             }
 
@@ -184,13 +184,7 @@ namespace RusBounds
             //string input = "Abc1234Def5678Ghi9012Jklm";
             string[] result = Regex.Split(Val, pattern,
                                           RegexOptions.IgnoreCase);
-            for (int ctr = 0; ctr < result.Length; ctr++)
-            {
-                Console.Write("'{0}'", result[ctr]);
-                if (ctr < result.Length - 1)
-                    Console.Write(", ");
-            }
-            Console.WriteLine();
+          
             return (result);
         }
 
@@ -200,13 +194,7 @@ namespace RusBounds
             //string input = "Abc1234Def5678Ghi9012Jklm";
             string[] result1 = Regex.Split(Val1, pattern,
                                           RegexOptions.IgnoreCase);
-            for (int ctr = 0; ctr < result1.Length; ctr++)
-            {
-                Console.Write("'{0}'", result1[ctr]);
-                if (ctr < result1.Length - 1)
-                    Console.Write(", ");
-            }
-            Console.WriteLine();
+            
             return (result1);
         }
         public emitentMain[] Start()
@@ -214,7 +202,7 @@ namespace RusBounds
     {
             int cntpage = this.GetPageN("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt1#rslt"); //определние кол-ва страниц
             int MP = this.GetLinesOfPage("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt");//получение количества строк на первой странице (nline)
-            Console.WriteLine(MP *cntpage);
+            //Console.WriteLine(MP *cntpage);
 
             emitentMain[] EmitM = new emitentMain[MP * cntpage];//определение размера масива структур (общее количесто эмитентов)
             int num = 1;
@@ -277,10 +265,10 @@ namespace RusBounds
                                 else
                                 {
                                    string[] U = this.GetCapital(CharterCapitalInTable.InnerText); //вытягиваем число с пробелами из уставного капитала до букв валюты   
-                                   EmitM[j].CharterCapital = ulong.Parse(U[1].Replace(" ", String.Empty)); // удаляем пробелы из числа
-                                   this.Сurrency(CharterCapitalInTable.InnerText);
-                                   //string[] V = this.Сurrency(CharterCapitalInTable.InnerText); //вытягиваем валюту из уставного капитала
-                                   //EmitM[j].CharterCapitalСurrency = (V[1].Replace(" ", String.Empty)); // удаляем пробелы из числа
+                                   EmitM[j].CharterCapital = ulong.Parse(U[0].Replace(" ", String.Empty)); // удаляем пробелы из числа
+                                   //this.Сurrency(CharterCapitalInTable.InnerText);
+                                   string[] V = this.Сurrency(CharterCapitalInTable.InnerText); //вытягиваем валюту из уставного капитала
+                                   EmitM[j].CharterCapitalСurrency = (V[V.Length-1].Replace(" ", String.Empty)); // удаляем пробелы из числа
                                     }
                             }
                             catch
