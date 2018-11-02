@@ -152,30 +152,38 @@ namespace RusBounds
             emitent Emit = new emitent();
             string XP = "http://www.rusbonds.ru/ank_org.asp?emit=" + idemitent;
             //RusB = featuredArticle.GetAttributeValue("href", null);
-
-            HtmlAgilityPack.HtmlWeb web1 = new HtmlWeb();
-            web1.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
-            HtmlAgilityPack.HtmlDocument doc1 = web1.Load(XP);
-            Emit.emit = int.Parse(idemitent);
-            Emit.inn = 0;
             try
             {
-                Emit.inn = ulong.Parse(doc1.DocumentNode.SelectSingleNode("/html//body/table[4]//tbody/tr[6]/td[2]").InnerText.Replace(" ", ""));
-            }
-            catch
-            {
-                if (Emit.inn == 0)
+                HtmlAgilityPack.HtmlWeb web1 = new HtmlWeb();
+                web1.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
+                HtmlAgilityPack.HtmlDocument doc1 = web1.Load(XP);
+                Emit.emit = int.Parse(idemitent);
+                Emit.inn = 0;
+                try
                 {
-                    try
-                    {
-                        Emit.inn = ulong.Parse(doc1.DocumentNode.SelectSingleNode("/html//body/table[4]//tbody/tr[7]/td[2]").InnerText.Replace(" ", ""));
-                    }
-                    catch
-                    { Emit.inn = 0; }
-                    
+                    Emit.inn = ulong.Parse(doc1.DocumentNode.SelectSingleNode("/html//body/table[4]//tbody/tr[6]/td[2]").InnerText.Replace(" ", ""));
                 }
+                catch
+                {
+                    if (Emit.inn == 0)
+                    {
+                        try
+                        {
+                            Emit.inn = ulong.Parse(doc1.DocumentNode.SelectSingleNode("/html//body/table[4]//tbody/tr[7]/td[2]").InnerText.Replace(" ", ""));
+                        }
+                        catch
+                        { Emit.inn = 0; }
+
+                    }
+                }
+                return (Emit);
             }
-            return (Emit);
+            catch {
+                Emit.inn = 0;
+                Console.WriteLine("the page of Emitent not found");
+                return (Emit);
+                
+                  }
          }
 
         public string[] GetCapital(string Val) // получение числа уставного капитала до валюты
