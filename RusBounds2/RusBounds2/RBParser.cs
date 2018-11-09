@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
-using HtmlAgilityPack;
 using System.Text.RegularExpressions;
+using HtmlAgilityPack;
 
 namespace RusBounds
 {
@@ -158,10 +158,65 @@ namespace RusBounds
                 web1.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
                 HtmlAgilityPack.HtmlDocument doc1 = web1.Load(XP);
                 Emit.emit = int.Parse(idemitent);
+
+                HtmlNodeCollection EmitentInfo = doc1.DocumentNode.SelectNodes("/html//body/table[4]//tbody/tr");
+                foreach(HtmlNode node in EmitentInfo)
+                {
+                    string swch = node.InnerText.Split(':')[0];
+                    switch (swch)
+                    {
+                        case "Наименование":
+                            Emit.name = node.InnerText.Split(':')[1];
+                            break;
+                        case "Основной ОКВЭД":
+                            Emit.okved = node.InnerText.Split(':')[1];
+                            break;
+                        case "Страна":
+                            Emit.country = node.InnerText.Split(':')[1];
+                            break;
+
+                        case "Регион":
+                            Emit.regdata = node.InnerText.Split(':')[1];
+                            break;
+
+                        case "ИНН":
+                            Emit.inn = ulong.Parse(node.InnerText.Split(':')[1]);
+                            break;
+
+                        case "ОКПО или др.":
+                            Emit.okpo = int.Parse(node.InnerText.Split(':')[1]);
+                            break;
+
+                        case "Данные по госрегистрации":
+                            Emit.regdata = node.InnerText.Split(':')[1];
+                            break;
+
+                        case "Юридический адрес":
+                            Emit.juridadress = node.InnerText.Split(':')[1];
+                            break;
+
+                        case "Почтовый адрес":
+                            Emit.postadress = node.InnerText.Split(':')[1];
+                            break;
+                        case "Вид собственности":
+                            Emit.property = node.InnerText.Split(':')[1];
+                            break;
+
+                        case "Уставной капитал":
+                            Emit.capital = int.Parse(node.InnerText.Split(':')[1]);
+                            break;
+
+                        default:
+                            break;
+
+                    }
+                        
+
+                }
                 //получение Наименования
                 try
                 {
-                    Emit.name = doc1.DocumentNode.SelectSingleNode("/html//body/table[4]//tbody/tr[2]/td[2]");
+                    Emit.name = doc1.DocumentNode.SelectSingleNode("/html//body/table[4]//tbody/tr[2]/td[2]").InnerHtml;
                 }
                 catch
                 {
@@ -173,7 +228,7 @@ namespace RusBounds
 
                 try
                 {
-                    Emit.name = ulong.Parse(doc1.DocumentNode.SelectSingleNode("/html//body/table[4]//tbody/tr[6]/td[2]").InnerText.Replace(" ", ""));
+                    Emit.inn = ulong.Parse(doc1.DocumentNode.SelectSingleNode("/html//body/table[4]//tbody/tr[6]/td[2]").InnerText.Replace(" ", ""));
                 }
                 catch
                 {

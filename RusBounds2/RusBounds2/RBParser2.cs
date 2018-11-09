@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RusBounds
+﻿namespace RusBounds
 {
     class RBParser2
     {
@@ -42,4 +36,5 @@ namespace RusBounds
                 CharterCapitalСurrency = "";
             }
         }
+    }
 }
