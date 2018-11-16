@@ -9,40 +9,19 @@ namespace RusBounds
     {
         public int emit;
         public string name;
-        public string discription;
+        //public string discription;
         public string okved;
         public string country;
-        public string eregion;
+        //public string eregion;
         public ulong inn;
         public int okpo;
         public string regdata;
         public string juridadress;
         public string postadress;
         public string property;
-        public int capital;
+        public ulong capital;
         public string currency;
-        public emitent(int emitid)
-        {
-            emit = emitid;
-            name = "";
-            discription = "";
-            okved = "";
-            country = "";
-            eregion = "";
-            inn = 0;
-            okpo = 0;
-            regdata = "";
-            juridadress = "";
-            postadress = "";
-            property = "";
-            capital = 0;
-            currency = "";
-        }
-    }
 
-    public struct emitentMain
-    {
-        public int emit;//??
         public string Industry; // отрасль
         public string Issuer;   // название эмитента
         public string Region;   // регион
@@ -53,10 +32,23 @@ namespace RusBounds
         public int ForeignLoansCnt; // внешние займы(кол-во)
         public ulong ForeignLoansСurrency; //внешние займы (объем USD)
         public string Rating; // рейтинг (!!! по ТЗ bool (0,1) 0- нет, 1 -Есть)
-        public ulong inn;
-        public emitentMain(int emitidMain)
+        public emitent(int emitid)
         {
-            emit = emitidMain;
+            emit = emitid;
+            name = "";
+            //discription = "";
+            okved = "";
+            country = "";
+            //eregion = "";
+            inn = 0;
+            okpo = 0;
+            regdata = "";
+            juridadress = "";
+            postadress = "";
+            property = "";
+            capital = 0;
+            currency = "";
+
             Industry = "";
             Issuer = "";
             Region = "";
@@ -67,9 +59,10 @@ namespace RusBounds
             ForeignLoansCnt = 0;
             ForeignLoansСurrency = 0;
             Rating = "";
-            inn = 0;
         }
     }
+
+    
     public class RBParser
     {
         public int GetPageN(string URL) //получение общего числа эмитентов
@@ -176,7 +169,7 @@ namespace RusBounds
                             break;
 
                         case "Регион":
-                            Emit.regdata = node.InnerText.Split(':')[1];
+                            Emit.Region = node.InnerText.Split(':')[1];
                             break;
 
                         case "ИНН":
@@ -187,7 +180,7 @@ namespace RusBounds
                             Emit.okpo = int.Parse(node.InnerText.Split(':')[1]);
                             break;
 
-                        case "Данные по госрегистрации":
+                        case "Данные госрегистрации":
                             Emit.regdata = node.InnerText.Split(':')[1];
                             break;
 
@@ -202,8 +195,12 @@ namespace RusBounds
                             Emit.property = node.InnerText.Split(':')[1];
                             break;
 
-                        case "Уставной капитал":
-                            Emit.capital = int.Parse(node.InnerText.Split(':')[1]);
+                        case "Уставный капитал":
+                            string[] U = this.GetCapital(node.InnerText.Split(':')[1]); //вытягиваем число с пробелами из уставного капитала до букв валюты   
+                            Emit.capital = ulong.Parse(U[0].Replace(" ", String.Empty)); // удаляем пробелы из числа
+
+                            string[] V = this.Сurrency(node.InnerText.Split(':')[1]); //вытягиваем валюту из уставного капитала
+                            Emit.currency = (V[V.Length - 1].Replace(" ", String.Empty)); // удаляем пробелы из числа
                             break;
 
                         default:
@@ -213,41 +210,13 @@ namespace RusBounds
                         
 
                 }
-                //получение Наименования
-                try
-                {
-                    Emit.name = doc1.DocumentNode.SelectSingleNode("/html//body/table[4]//tbody/tr[2]/td[2]").InnerHtml;
-                }
-                catch
-                {
-                    Emit.name = "";
-                    
-                }
-
-                //получение 
-
-                try
-                {
-                    Emit.inn = ulong.Parse(doc1.DocumentNode.SelectSingleNode("/html//body/table[4]//tbody/tr[6]/td[2]").InnerText.Replace(" ", ""));
-                }
-                catch
-                {
-                    if (Emit.inn == 0)
-                    {
-                        try
-                        {
-                            Emit.inn = ulong.Parse(doc1.DocumentNode.SelectSingleNode("/html//body/table[4]//tbody/tr[7]/td[2]").InnerText.Replace(" ", ""));
-                        }
-                        catch
-                        { Emit.inn = 0; }
-
-                    }
-                }
+                
+                
                 return (Emit);
             }
-            catch {
+            catch(Exception e) {
                 Emit.inn = 0;
-                Console.WriteLine("the page of Emitent not found");
+                Console.WriteLine("the page of Emitent not found" + e.Message);
                 return (Emit);
                 
                   }
@@ -272,16 +241,17 @@ namespace RusBounds
             
             return (result1);
         }
-        public emitentMain[] Start()
+        public emitent[] Start()
 
     {
             int cntpage = this.GetPageN("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt1#rslt"); //определние кол-ва страниц
             int MP = this.GetLinesOfPage("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt");//получение количества строк на первой странице (nline)
             //Console.WriteLine(MP *cntpage);
 
-            emitentMain[] EmitM = new emitentMain[MP * cntpage];//определение размера масива структур (общее количесто эмитентов)
+            emitent[] EmitM = new emitent[MP * cntpage];//определение размера масива структур (общее количесто эмитентов)
             int num = 1;
             int i = 1;
+
             int j = 0;
             
             do
@@ -406,7 +376,20 @@ namespace RusBounds
                                 string resultINN = INN.Split('=')[1];
                                 RBParser Parser = new RBParser();
                                 string emitentnamber = resultINN;
-                                EmitM[j].inn = Parser.GetEmitentData(emitentnamber).inn;
+                                //EmitM[j].inn = 
+                                emitent Temp = Parser.GetEmitentData(emitentnamber);
+                                EmitM[j].inn = Temp.inn;
+                                EmitM[j].capital = Temp.capital;
+                                EmitM[j].country = Temp.country;
+                                EmitM[j].currency = Temp.currency;
+                                //EmitM[j].discription = Temp.discription;
+                                //EmitM[j].eregion = Temp.eregion;
+                                EmitM[j].juridadress = Temp.juridadress;
+                                EmitM[j].name = Temp.name;
+                                EmitM[j].okpo = Temp.okpo;
+                                EmitM[j].okved = Temp.okved;
+                                EmitM[j].postadress = Temp.postadress;
+                                EmitM[j].regdata = Temp.regdata;
                                 //Console.WriteLine(Parser.GetEmitentData(emitentnamber).inn);
                                 //Console.WriteLine(resultINN);
                                 num = num + 1;

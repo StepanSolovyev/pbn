@@ -16,9 +16,9 @@ namespace RusBounds
 
             RBParser Parser = new RBParser();
             
-            emitentMain[] Test = Parser.Start();
+            emitent[] Test = Parser.Start();
 
-            foreach (emitentMain item in Test)
+            foreach (emitent item in Test)
             {
                 Console.WriteLine(item.Issuer + " " + item.inn);
 
