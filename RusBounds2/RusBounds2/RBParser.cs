@@ -5,26 +5,29 @@ using HtmlAgilityPack;
 
 namespace RusBounds
 {
+    /// <summary>  
+    ///  Содержит основные данные по эмитенту
+    /// </summary> 
     public struct emitent
     {
-        public int emit;
-        public string name;
-        //public string discription;
-        public string okved;
-        public string country;
-        //public string eregion;
-        public ulong inn;
-        public int okpo;
-        public string regdata;
-        public string juridadress;
-        public string postadress;
-        public string property;
-        public ulong capital;
-        public string currency;
+        public ulong    capital;
+        public string   country;
+        public string   currency;
+        public int      emit;
+        public ulong    inn;
+        public string   juridadress;
+        public string   name;
+        public int      okpo;
+        public string   okved;
+        public string   postadress;
+        public string   property;
+        public string   regdata;
+        public string   region;
 
+        //public string eregion;
+        //public string discription;
         //public string Industry; // отрасль
         //public string Issuer;   // название эмитента
-        public string Region;   // регион
         //public ulong CharterCapital;  // уставной капитал  (1000 RUB - вытягивать 1000)
         //public string CharterCapitalСurrency;  // валюта уставного капитала (1000 RUB - вытягивать RUB)
         //public int DomesticLoansCnt; // внутренние займы(кол-во)
@@ -32,26 +35,29 @@ namespace RusBounds
         //public int ForeignLoansCnt; // внешние займы(кол-во)
         //public ulong ForeignLoansСurrency; //внешние займы (объем USD)
         //public string Rating; // рейтинг (!!! по ТЗ bool (0,1) 0- нет, 1 -Есть)
+        /// <summary>  
+        ///  Конструктор эмитента заполняет все поля пустыми значениями.
+        /// </summary> 
         public emitent(int emitid)
         {
-            emit = emitid;
-            name = "";
-            //discription = "";
-            okved = "";
-            country = "";
-            //eregion = "";
-            inn = 0;
-            okpo = 0;
-            regdata = "";
+            capital     = 0;
+            country     = "";
+            currency    = "";
+            emit        =  emitid;
+            inn         = 0;
             juridadress = "";
-            postadress = "";
-            property = "";
-            capital = 0;
-            currency = "";
-
+            name        =  "";
+            okpo        = 0;
+            okved       = "";
+            postadress  = "";
+            property    = "";
+            regdata     = "";
+            region      = "";
+            
+            //eregion = "";
+            //discription = "";
             //Industry = "";
             //Issuer = "";
-            Region = "";
             //CharterCapital = 0;
             //CharterCapitalСurrency = "";
             //DomesticLoansCnt = 0;
@@ -62,20 +68,39 @@ namespace RusBounds
         }
     }
 
-    
+    /// <summary>  
+    ///  Этот класс содержит основные функции   
+    /// </summary> 
     public class RBParser
     {
-        public int GetPageN(string URL) //получение общего числа эмитентов
+        /// <summary>  
+        /// Получение общего числа эмитентов
+        /// </summary>
+        /// <param name="URL">URL на страницу с гридом</param>
+        int GetPageCounter(string URL) 
         {
-                int i = 0; //счетчик тегов /a[i] с интервалами
-                int j = 0;//счетчик тегов /a[i] с отдельными значениями страниц
-                int MAX = 0; //последнее значение страницы в последнем интервале страниц
-                string IPath = ""; //XPath нода с последним интервалом страниц
-                int pageN = 0; //номер последней страницы
+            //счетчик тегов /a[i] с интервалами
+            int i = 0;
+
+            //счетчик тегов /a[i] с отдельными значениями страниц
+            int j = 0;
+            //последнее значение страницы в последнем интервале страниц
+            int MAX = 0;
+
+            //XPath нода с последним интервалом страниц
+            string IPath = "";
+
+            //номер последней страницы
+            int pageN = 0; 
                 bool test1;
-                String allpage = ""; //значение интервала страниц
+
+            //значение интервала страниц
+            String allpage = ""; 
+
                 HtmlAgilityPack.HtmlWeb web2 = new HtmlWeb();
+
                 web2.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
+
                 HtmlAgilityPack.HtmlDocument doc2 = web2.Load(URL);
                 try
                 {
@@ -117,9 +142,11 @@ namespace RusBounds
 
                 return (pageN);//номер последней страницы (int)
             }
-
-
-        public int GetLinesOfPage(string URL) //получение числа строк в таблице на странице
+        /// <summary>  
+        /// Получение числа строк в таблице на странице
+        /// </summary>
+        /// <param name="URL">URL на странице которого находится грид</param>
+        int GetRowCounter(string URL)
             {
                 HtmlAgilityPack.HtmlWeb webLine = new HtmlWeb();
                 HtmlAgilityPack.HtmlDocument docLine = webLine.Load(URL);
@@ -139,17 +166,19 @@ namespace RusBounds
                 //Console.WriteLine("nline: ");
                 return (nline);
             }
-
-        public emitent GetEmitentData(string emithref) //получение данных эмитента по указанным в switch полям
+        /// <summary>  
+        ///  Получение данных об эмитенте
+        /// </summary>
+        /// <param name="emithref">Относительный URL на странице которого находится грид с анкетой компании</param>
+        emitent GetEmitentData(string emithref)
         {
-            emitent Emit = new emitent();
-            string XP = "http://www.rusbonds.ru" + emithref;
-            //RusB = featuredArticle.GetAttributeValue("href", null);
+            emitent Emit = new emitent(int.Parse(emithref.Split('=')[1]));
+            string FullEmitentUrl = "http://www.rusbonds.ru" + emithref;
             try
             {
                 HtmlAgilityPack.HtmlWeb web1 = new HtmlWeb();
                 web1.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
-                HtmlAgilityPack.HtmlDocument doc1 = web1.Load(XP);
+                HtmlAgilityPack.HtmlDocument doc1 = web1.Load(FullEmitentUrl);
                 //Emit.emit = int.Parse(idemitent);
 
                 HtmlNodeCollection EmitentInfo = doc1.DocumentNode.SelectNodes("/html//body/table[4]//tbody/tr");
@@ -169,7 +198,7 @@ namespace RusBounds
                             break;
 
                         case "Регион":
-                            Emit.Region = node.InnerText.Split(':')[1];
+                            Emit.region = node.InnerText.Split(':')[1];
                             break;
 
                         case "ИНН":
@@ -217,17 +246,23 @@ namespace RusBounds
                 return (Emit);                
                 }
             }
-
-        public string[] GetCapital(string Val) // получение числа уставного капитала до валюты
+        /// <summary>  
+        ///  Получение числа уставного капитала до валюты со сплитом строки 
+        /// </summary>
+        /// <param name="Val">Исходная строка в формате "10 100 000 000 RUR"</param>
+        string[] GetCapital(string Val) 
         {
             string pattern = "[A-Z]+";
-            //string input = "Abc1234Def5678Ghi9012Jklm";
             string[] result = Regex.Split(Val, pattern,
                                           RegexOptions.IgnoreCase);
             return (result);
         }
 
-       public string[] Сurrency(string Val1)
+        /// <summary>  
+        ///  Получение типа валюты уставного капитала
+        /// </summary>
+        /// <param name="Val1">Исходная строка в формате "10 100 000 000 RUR"</param>
+        string[] Сurrency(string Val1)
         {
             string pattern = "[0-9]";
             //string input = "Abc1234Def5678Ghi9012Jklm";
@@ -236,85 +271,83 @@ namespace RusBounds
             
             return (result1);
         }
+
+        /// <summary>  
+        ///  Главный метод класса. Возвращает массив структур с заполненными данными по каждому эмитенту в нём.
+        ///  <returns>Возвращает массив emitent[].</returns>
+        /// </summary>
         public emitent[] Start()
-
     {
-            int cntpage = this.GetPageN("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt1#rslt"); //определние кол-ва страниц
-            int MP = this.GetLinesOfPage("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt");//получение количества строк на первой странице (nline)
-            //Console.WriteLine(MP *cntpage);
+            // определяет кол-во страниц в мультистраничном гриде веб страницы
+            int PageCounter = this.GetPageCounter("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt1#rslt");
 
-            emitent[] EmitM = new emitent[MP * cntpage];//определение размера масива структур (общее количесто эмитентов)
-            int num = 1;
-            int i = 1;
+            // определяет кол-во строк на каждой странице грида
+            int RowCounter = this.GetRowCounter("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt");
 
-            int j = 0;
-            
+            //определение масива структур , его размера (общее количесто эмитентов)
+            emitent[] EmitentArrayToReturn = new emitent[RowCounter * PageCounter];
+
+            // определяем начальные значения для дальнейшей итерации по многостраничному гриду и массиву эимтентов
+            int CurrentPageIndex = 1;
+            int CurrentRowIndex = 1;
+            int ArrayCurrentElementIndex = 0; // будущий итератор для EmitentArrayToReturn
+
+            //выгрузка данных из таблицы постранично и построчно из каждой страницы грида
             do
-            {
-                HtmlAgilityPack.HtmlWeb web1 = new HtmlWeb();
-                web1.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
-                //URL адрес с изменяемым порядковым номером страницы i
-                HtmlAgilityPack.HtmlDocument doc1 = web1.Load("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + i + "#rslt");
-                   
+            {   
                 try
                 {   
-#if DEBUG
-                    // Console.WriteLine("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + i + "#rslt");
-#endif
-                    //выгрузка данных из таблицы постранично
-                    HtmlAgilityPack.HtmlWeb webALL1 = new HtmlWeb();
-                    webALL1.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
-                    HtmlAgilityPack.HtmlDocument docALL1 = webALL1.Load("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + i + "#rslt");
+                    HtmlWeb CurrentHTMLPage = new HtmlWeb();
+                    CurrentHTMLPage.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
+
+                    // получает веб страницу с гридом для парсинга
+                    HtmlAgilityPack.HtmlDocument CurrentHTMLPageAsDoc = CurrentHTMLPage.Load("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + CurrentPageIndex + "#rslt");
                        
                     do
                     {
-                        foreach (HtmlNode row in docALL1.DocumentNode.SelectNodes("/html/body/div[1]/table[2]/tbody/tr[" + num + "]"))
+                        foreach (HtmlNode row in CurrentHTMLPageAsDoc.DocumentNode.SelectNodes("/html/body/div[1]/table[2]/tbody/tr[" + CurrentRowIndex + "]"))
                             if (row != null)
                             {
 #if DEBUG
-                                Console.WriteLine(num);
+                                Console.WriteLine(ArrayCurrentElementIndex+"\t\tof "+ RowCounter * PageCounter);
 #endif
-                                
-                                //HtmlNode IssuerInTable = row.SelectSingleNode("td[2]/a");//Название Эмитента
-                                //EmitM[j].Issuer = IssuerInTable.InnerText;
-                                                           
                                 HtmlNode mhref = row.SelectSingleNode("td[2]/a");// ссылка  http://www.rusbonds.ru/ank_org.asp?emit=78881
                                 string emithref = mhref.GetAttributeValue("href", null);
-                                //string resultINN = INN.Split('=')[1];
                                 RBParser Parser = new RBParser();
-                                //string emitentnamber = emithref;
-                                //EmitM[j].inn = 
                                 emitent Temp = Parser.GetEmitentData(emithref);
-                                EmitM[j].inn = Temp.inn;
-                                EmitM[j].capital = Temp.capital;
-                                EmitM[j].country = Temp.country;
-                                EmitM[j].currency = Temp.currency;
-                                //EmitM[j].discription = Temp.discription;
-                                //EmitM[j].eregion = Temp.eregion;
-                                EmitM[j].juridadress = Temp.juridadress;
-                                EmitM[j].name = Temp.name;
-                                EmitM[j].okpo = Temp.okpo;
-                                EmitM[j].okved = Temp.okved;
-                                EmitM[j].postadress = Temp.postadress;
-                                EmitM[j].regdata = Temp.regdata;
-                                //Console.WriteLine(Parser.GetEmitentData(emitentnamber).inn);
-                                //Console.WriteLine(resultINN);
-                                num = num + 1;
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].inn          = Temp.inn;
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].capital      = Temp.capital;
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].country      = Temp.country;
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].currency     = Temp.currency;
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].juridadress  = Temp.juridadress;
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].name         = Temp.name;
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].okpo         = Temp.okpo;
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].okved        = Temp.okved;
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].postadress   = Temp.postadress;
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].regdata      = Temp.regdata;
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].region       = Temp.region;
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].emit         = Temp.emit;
+                                CurrentRowIndex++;
                             }
-                        j++; //счетчик элементов массива ()
+                        ArrayCurrentElementIndex++;
                     }
-                    while (num <= MP); //проверка конца массива строк на странице
-                    i = i + 1;//счетчик страниц
-                    num = 1;//счетчик строк
+                    //проверка конца массива строк на странице - условие перехода на новую страницу
+                    while (CurrentRowIndex <= RowCounter); 
+                    CurrentPageIndex++;
+
+                    //сброс счетчика строк грида при переходе на новую страницу
+                    CurrentRowIndex = 1;
                 }
                 catch (Exception ex)
                 {
+#if DEBUG
                     Console.WriteLine(ex.Message);
+#endif
                     break;
                 }
             }
-            while (i != 300);//заведомо большое число страниц
-            return (EmitM);
+            while (CurrentPageIndex != 300);//заведомо большое число страниц
+            return (EmitentArrayToReturn);
          }
     }
     
