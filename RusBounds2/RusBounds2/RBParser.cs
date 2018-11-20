@@ -22,16 +22,16 @@ namespace RusBounds
         public ulong capital;
         public string currency;
 
-        public string Industry; // отрасль
-        public string Issuer;   // название эмитента
+        //public string Industry; // отрасль
+        //public string Issuer;   // название эмитента
         public string Region;   // регион
-        public ulong CharterCapital;  // уставной капитал  (1000 RUB - вытягивать 1000)
-        public string CharterCapitalСurrency;  // валюта уставного капитала (1000 RUB - вытягивать RUB)
-        public int DomesticLoansCnt; // внутренние займы(кол-во)
-        public ulong DomesticLoansСurrency; // внутренние займы(объем RUB)
-        public int ForeignLoansCnt; // внешние займы(кол-во)
-        public ulong ForeignLoansСurrency; //внешние займы (объем USD)
-        public string Rating; // рейтинг (!!! по ТЗ bool (0,1) 0- нет, 1 -Есть)
+        //public ulong CharterCapital;  // уставной капитал  (1000 RUB - вытягивать 1000)
+        //public string CharterCapitalСurrency;  // валюта уставного капитала (1000 RUB - вытягивать RUB)
+        //public int DomesticLoansCnt; // внутренние займы(кол-во)
+        //public ulong DomesticLoansСurrency; // внутренние займы(объем RUB)
+        //public int ForeignLoansCnt; // внешние займы(кол-во)
+        //public ulong ForeignLoansСurrency; //внешние займы (объем USD)
+        //public string Rating; // рейтинг (!!! по ТЗ bool (0,1) 0- нет, 1 -Есть)
         public emitent(int emitid)
         {
             emit = emitid;
@@ -49,16 +49,16 @@ namespace RusBounds
             capital = 0;
             currency = "";
 
-            Industry = "";
-            Issuer = "";
+            //Industry = "";
+            //Issuer = "";
             Region = "";
-            CharterCapital = 0;
-            CharterCapitalСurrency = "";
-            DomesticLoansCnt = 0;
-            DomesticLoansСurrency = 0;
-            ForeignLoansCnt = 0;
-            ForeignLoansСurrency = 0;
-            Rating = "";
+            //CharterCapital = 0;
+            //CharterCapitalСurrency = "";
+            //DomesticLoansCnt = 0;
+            //DomesticLoansСurrency = 0;
+            //ForeignLoansCnt = 0;
+            //ForeignLoansСurrency = 0;
+            //Rating = "";
         }
     }
 
@@ -140,17 +140,17 @@ namespace RusBounds
                 return (nline);
             }
 
-        public emitent GetEmitentData(string idemitent) //получение ИНН эмитента
+        public emitent GetEmitentData(string emithref) //получение данных эмитента по указанным в switch полям
         {
             emitent Emit = new emitent();
-            string XP = "http://www.rusbonds.ru/ank_org.asp?emit=" + idemitent;
+            string XP = "http://www.rusbonds.ru" + emithref;
             //RusB = featuredArticle.GetAttributeValue("href", null);
             try
             {
                 HtmlAgilityPack.HtmlWeb web1 = new HtmlWeb();
                 web1.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
                 HtmlAgilityPack.HtmlDocument doc1 = web1.Load(XP);
-                Emit.emit = int.Parse(idemitent);
+                //Emit.emit = int.Parse(idemitent);
 
                 HtmlNodeCollection EmitentInfo = doc1.DocumentNode.SelectNodes("/html//body/table[4]//tbody/tr");
                 foreach(HtmlNode node in EmitentInfo)
@@ -205,22 +205,18 @@ namespace RusBounds
 
                         default:
                             break;
-
-                    }
-                        
-
-                }
-                
+                    }                 
+                }                
                 
                 return (Emit);
             }
-            catch(Exception e) {
+            catch(Exception e)
+                {
                 Emit.inn = 0;
                 Console.WriteLine("the page of Emitent not found" + e.Message);
-                return (Emit);
-                
-                  }
-         }
+                return (Emit);                
+                }
+            }
 
         public string[] GetCapital(string Val) // получение числа уставного капитала до валюты
         {
@@ -228,15 +224,14 @@ namespace RusBounds
             //string input = "Abc1234Def5678Ghi9012Jklm";
             string[] result = Regex.Split(Val, pattern,
                                           RegexOptions.IgnoreCase);
-          
             return (result);
         }
 
-        public string[] Сurrency(string Val1)
+       public string[] Сurrency(string Val1)
         {
             string pattern = "[0-9]";
             //string input = "Abc1234Def5678Ghi9012Jklm";
-            string[] result1 = Regex.Split(Val1, pattern,
+           string[] result1 = Regex.Split(Val1, pattern,
                                           RegexOptions.IgnoreCase);
             
             return (result1);
@@ -279,105 +274,17 @@ namespace RusBounds
 #if DEBUG
                                 Console.WriteLine(num);
 #endif
-                                HtmlNode IndustryInTable = row.SelectSingleNode("td[1]"); //Отрасль
-                                EmitM[j].Industry = IndustryInTable.InnerText;
-                                //Console.WriteLine(NumInTable.InnerText);
-                                HtmlNode IssuerInTable = row.SelectSingleNode("td[2]/a");//Название Эмитента
-                                EmitM[j].Issuer = IssuerInTable.InnerText;
-                            //Console.WriteLine(TimeOfBound.InnerText);
-                            try
-                            {
-                                HtmlNode RegionInTable = row.SelectSingleNode("td[3]");//Регион
-                                EmitM[j].Region = RegionInTable.InnerText;
-                                if (RegionInTable.InnerText == "&nbsp;")
-                                {
-                                    EmitM[j].Region = " ";
-                                }
-                            }
-                            catch
-                            {
-                                EmitM[j].Region = "";
-                            }
-                            //Console.WriteLine(NameOfBound.InnerText);
-                            try
-                            {
-                                HtmlNode CharterCapitalInTable = row.SelectSingleNode("td[4]");
-                                if (CharterCapitalInTable.InnerText == "&nbsp;")
-                                {
-                                    EmitM[j].CharterCapital = 0; // Уставной капитал  (1000 RUB - вытягивать 1000)
-                                    EmitM[j].CharterCapitalСurrency = ""; // валюта уставного капитала (1000 RUB - вытягивать RUB)}
-                                }
-                                else
-                                {
-                                   string[] U = this.GetCapital(CharterCapitalInTable.InnerText); //вытягиваем число с пробелами из уставного капитала до букв валюты   
-                                   EmitM[j].CharterCapital = ulong.Parse(U[0].Replace(" ", String.Empty)); // удаляем пробелы из числа
-                                   //this.Сurrency(CharterCapitalInTable.InnerText);
-                                   string[] V = this.Сurrency(CharterCapitalInTable.InnerText); //вытягиваем валюту из уставного капитала
-                                   EmitM[j].CharterCapitalСurrency = (V[V.Length-1].Replace(" ", String.Empty)); // удаляем пробелы из числа
-                                    }
-                            }
-                            catch
-                            {
-                                  EmitM[j].CharterCapital = 0;
-                            }
-                            //Console.WriteLine(redemption.InnerText);
-                            try
-                            {
-                                  HtmlNode DLCntInTable = row.SelectSingleNode("td[5]");// внутренние займы(кол-во)
-                                  EmitM[j].DomesticLoansCnt = int.Parse(DLCntInTable.InnerText);
-                                    
-                            }
-                            catch
-                            {
-                                EmitM[j].DomesticLoansCnt = 0;
-                            }
-                            try
-                            {
-                                HtmlNode DLСurInTable = row.SelectSingleNode("td[6]");// Внутренние займы(объем RUB)
-
-                                EmitM[j].DomesticLoansСurrency = ulong.Parse(DLСurInTable.InnerText.Replace(" ", string.Empty));                               
-                                      
-                            }
-                            catch
-                            { EmitM[j].DomesticLoansСurrency = 0; }
-                            try
-                            {
-                                HtmlNode FLCntInTable = row.SelectSingleNode("td[7]");// внешние займы(кол-во)
-                                if (FLCntInTable.InnerText == "&nbsp;")
-                                {
-                                    EmitM[j].ForeignLoansCnt = 0; // внешние займы(кол-во)
-                                }
-                                else
-                                {
-                                    EmitM[j].ForeignLoansCnt = int.Parse(FLCntInTable.InnerText); // удаляем пробелы из числа
-                                }
-                                   
-                            }
-                            catch { EmitM[j].ForeignLoansCnt = 0; }
-                            try
-                            {
-                                HtmlNode FLСurInTable = row.SelectSingleNode("td[8]");// внешние займы(объем USD)
-                                if (FLСurInTable.InnerText == "&nbsp;")
-                                {
-                                    EmitM[j].ForeignLoansСurrency = 0;
-                                }
-                                else
-                                {
-                                    EmitM[j].ForeignLoansСurrency = ulong.Parse(FLСurInTable.InnerText.Replace(" ", string.Empty));
-                                }
-                            }
-                            catch { EmitM[j].ForeignLoansСurrency = 0; }
-
-                                HtmlNode RatingInTable = row.SelectSingleNode("td[9]"); // рейтинг
-                                EmitM[j].Rating = RatingInTable.InnerText;
-
+                                
+                                //HtmlNode IssuerInTable = row.SelectSingleNode("td[2]/a");//Название Эмитента
+                                //EmitM[j].Issuer = IssuerInTable.InnerText;
+                                                           
                                 HtmlNode mhref = row.SelectSingleNode("td[2]/a");// ссылка  http://www.rusbonds.ru/ank_org.asp?emit=78881
-                                string INN = mhref.GetAttributeValue("href", null);
-                                string resultINN = INN.Split('=')[1];
+                                string emithref = mhref.GetAttributeValue("href", null);
+                                //string resultINN = INN.Split('=')[1];
                                 RBParser Parser = new RBParser();
-                                string emitentnamber = resultINN;
+                                //string emitentnamber = emithref;
                                 //EmitM[j].inn = 
-                                emitent Temp = Parser.GetEmitentData(emitentnamber);
+                                emitent Temp = Parser.GetEmitentData(emithref);
                                 EmitM[j].inn = Temp.inn;
                                 EmitM[j].capital = Temp.capital;
                                 EmitM[j].country = Temp.country;
