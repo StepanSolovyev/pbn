@@ -17,54 +17,31 @@ namespace RusBounds
         public ulong    inn;
         public string   juridadress;
         public string   name;
-        public int      okpo;
+        public string   okpo;
         public string   okved;
         public string   postadress;
-        public string   property;
+        public string   propertytype;
         public string   regdata;
         public string   region;
 
-        //public string eregion;
-        //public string discription;
-        //public string Industry; // отрасль
-        //public string Issuer;   // название эмитента
-        //public ulong CharterCapital;  // уставной капитал  (1000 RUB - вытягивать 1000)
-        //public string CharterCapitalСurrency;  // валюта уставного капитала (1000 RUB - вытягивать RUB)
-        //public int DomesticLoansCnt; // внутренние займы(кол-во)
-        //public ulong DomesticLoansСurrency; // внутренние займы(объем RUB)
-        //public int ForeignLoansCnt; // внешние займы(кол-во)
-        //public ulong ForeignLoansСurrency; //внешние займы (объем USD)
-        //public string Rating; // рейтинг (!!! по ТЗ bool (0,1) 0- нет, 1 -Есть)
         /// <summary>  
         ///  Конструктор эмитента заполняет все поля пустыми значениями.
         /// </summary> 
         public emitent(int emitid)
         {
-            capital     = 0;
-            country     = "";
-            currency    = "";
-            emit        =  emitid;
-            inn         = 0;
-            juridadress = "";
-            name        =  "";
-            okpo        = 0;
-            okved       = "";
-            postadress  = "";
-            property    = "";
-            regdata     = "";
-            region      = "";
-            
-            //eregion = "";
-            //discription = "";
-            //Industry = "";
-            //Issuer = "";
-            //CharterCapital = 0;
-            //CharterCapitalСurrency = "";
-            //DomesticLoansCnt = 0;
-            //DomesticLoansСurrency = 0;
-            //ForeignLoansCnt = 0;
-            //ForeignLoansСurrency = 0;
-            //Rating = "";
+            capital         = 0;
+            country         = "";
+            currency        = "";
+            emit            =  emitid;
+            inn             = 0;
+            juridadress     = "";
+            name            = "";
+            okpo            = "";
+            okved           = "";
+            postadress      = "";
+            propertytype    = "";
+            regdata         = "";
+            region          = "";
         }
     }
 
@@ -95,13 +72,14 @@ namespace RusBounds
                 bool test1;
 
             //значение интервала страниц
-            String allpage = ""; 
+            String allpage = "";
 
-                HtmlAgilityPack.HtmlWeb web2 = new HtmlWeb();
+            HtmlAgilityPack.HtmlWeb web2 = new HtmlWeb
+            {
+                OverrideEncoding = Encoding.GetEncoding("Windows-1251")
+            };
 
-                web2.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
-
-                HtmlAgilityPack.HtmlDocument doc2 = web2.Load(URL);
+            HtmlAgilityPack.HtmlDocument doc2 = web2.Load(URL);
                 try
                 {
                     do
@@ -206,7 +184,7 @@ namespace RusBounds
                             break;
 
                         case "ОКПО или др.":
-                            Emit.okpo = int.Parse(node.InnerText.Split(':')[1]);
+                            Emit.okpo = node.InnerText.Split(':')[1];
                             break;
 
                         case "Данные госрегистрации":
@@ -221,7 +199,7 @@ namespace RusBounds
                             Emit.postadress = node.InnerText.Split(':')[1];
                             break;
                         case "Вид собственности":
-                            Emit.property = node.InnerText.Split(':')[1];
+                            Emit.propertytype = node.InnerText.Split(':')[1];
                             break;
 
                         case "Уставный капитал":
@@ -296,9 +274,11 @@ namespace RusBounds
             do
             {   
                 try
-                {   
-                    HtmlWeb CurrentHTMLPage = new HtmlWeb();
-                    CurrentHTMLPage.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
+                {
+                    HtmlWeb CurrentHTMLPage = new HtmlWeb
+                    {
+                        OverrideEncoding = Encoding.GetEncoding("Windows-1251")
+                    };
 
                     // получает веб страницу с гридом для парсинга
                     HtmlAgilityPack.HtmlDocument CurrentHTMLPageAsDoc = CurrentHTMLPage.Load("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + CurrentPageIndex + "#rslt");
@@ -309,24 +289,12 @@ namespace RusBounds
                             if (row != null)
                             {
 #if DEBUG
-                                Console.WriteLine(ArrayCurrentElementIndex+"\t\tof "+ RowCounter * PageCounter);
+                                Console.WriteLine(ArrayCurrentElementIndex+"\t"+ Math.Round(((double)ArrayCurrentElementIndex/((double)RowCounter * (double)PageCounter))*100, 2) + "%\tof "+ RowCounter * PageCounter);
 #endif
-                                HtmlNode mhref = row.SelectSingleNode("td[2]/a");// ссылка  http://www.rusbonds.ru/ank_org.asp?emit=78881
+                                //получает из строки грида ссылку на эмитент вида "http://www.rusbonds.ru/ank_org.asp?emit=78881"
+                                HtmlNode mhref = row.SelectSingleNode("td[2]/a");
                                 string emithref = mhref.GetAttributeValue("href", null);
-                                RBParser Parser = new RBParser();
-                                emitent Temp = Parser.GetEmitentData(emithref);
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].inn          = Temp.inn;
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].capital      = Temp.capital;
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].country      = Temp.country;
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].currency     = Temp.currency;
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].juridadress  = Temp.juridadress;
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].name         = Temp.name;
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].okpo         = Temp.okpo;
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].okved        = Temp.okved;
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].postadress   = Temp.postadress;
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].regdata      = Temp.regdata;
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].region       = Temp.region;
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].emit         = Temp.emit;
+                                EmitentArrayToReturn[ArrayCurrentElementIndex] = this.GetEmitentData(emithref);
                                 CurrentRowIndex++;
                             }
                         ArrayCurrentElementIndex++;
