@@ -20,7 +20,7 @@ namespace RusBounds
 
             foreach (emitent item in Test)
             {
-                Console.WriteLine(item.name + " " + item.inn);
+                Console.WriteLine(item.Issuer + " " + item.INN);
 
             }
             Console.ReadLine();

@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using System.Linq;
 
 namespace RusBounds
 {
@@ -10,38 +11,40 @@ namespace RusBounds
     /// </summary> 
     public struct emitent
     {
-        public ulong    capital;
-        public string   country;
-        public string   currency;
-        public int      emit;
-        public ulong    inn;
-        public string   juridadress;
-        public string   name;
-        public string   okpo;
-        public string   okved;
-        public string   postadress;
-        public string   propertytype;
-        public string   regdata;
-        public string   region;
+        public string Issuer;
+        public string TypeOfBusiness;
+        public string Country;
+        public string Region;
+        public ulong  INN;
+        public string OKPO;
+        public string GosRegData;
+        public string LowAddress;
+        public string MailingAddress;
+        public string TypeOfProperty;
+        public ulong  CharterCapital;
+        public string CharterCapitalCurrency;
+
+        // debug field
+        public int    emit;
 
         /// <summary>  
         ///  Конструктор эмитента заполняет все поля пустыми значениями.
         /// </summary> 
         public emitent(int emitid)
         {
-            capital         = 0;
-            country         = "";
-            currency        = "";
+            CharterCapital = 0;
+            Country         = "";
+            CharterCapitalCurrency = "";
             emit            =  emitid;
-            inn             = 0;
-            juridadress     = "";
-            name            = "";
-            okpo            = "";
-            okved           = "";
-            postadress      = "";
-            propertytype    = "";
-            regdata         = "";
-            region          = "";
+            INN             = 0;
+            LowAddress     = "";
+            Issuer            = "";
+            OKPO            = "";
+            TypeOfBusiness           = "";
+            MailingAddress      = "";
+            TypeOfProperty    = "";
+            GosRegData         = "";
+            Region          = "";
         }
     }
 
@@ -166,48 +169,48 @@ namespace RusBounds
                     switch (swch)
                     {
                         case "Наименование":
-                            Emit.name = node.InnerText.Split(':')[1];
+                            Emit.Issuer = node.InnerText.Split(':')[1];
                             break;
                         case "Основной ОКВЭД":
-                            Emit.okved = node.InnerText.Split(':')[1];
+                            Emit.TypeOfBusiness = node.InnerText.Split(':')[1];
                             break;
                         case "Страна":
-                            Emit.country = node.InnerText.Split(':')[1];
+                            Emit.Country = node.InnerText.Split(':')[1];
                             break;
 
                         case "Регион":
-                            Emit.region = node.InnerText.Split(':')[1];
+                            Emit.Region = node.InnerText.Split(':')[1];
                             break;
 
                         case "ИНН":
-                            Emit.inn = ulong.Parse(node.InnerText.Split(':')[1]);
+                            Emit.INN = ulong.Parse(node.InnerText.Split(':')[1]);
                             break;
 
                         case "ОКПО или др.":
-                            Emit.okpo = node.InnerText.Split(':')[1];
+                            Emit.OKPO = node.InnerText.Split(':')[1];
                             break;
 
                         case "Данные госрегистрации":
-                            Emit.regdata = node.InnerText.Split(':')[1];
+                            Emit.GosRegData = node.InnerText.Split(':')[1];
                             break;
 
                         case "Юридический адрес":
-                            Emit.juridadress = node.InnerText.Split(':')[1];
+                            Emit.LowAddress = node.InnerText.Split(':')[1];
                             break;
 
                         case "Почтовый адрес":
-                            Emit.postadress = node.InnerText.Split(':')[1];
+                            Emit.MailingAddress = node.InnerText.Split(':')[1];
                             break;
                         case "Вид собственности":
-                            Emit.propertytype = node.InnerText.Split(':')[1];
+                            Emit.TypeOfProperty = node.InnerText.Split(':')[1];
                             break;
 
                         case "Уставный капитал":
                             string[] U = this.GetCapital(node.InnerText.Split(':')[1]); //вытягиваем число с пробелами из уставного капитала до букв валюты   
-                            Emit.capital = ulong.Parse(U[0].Replace(" ", String.Empty)); // удаляем пробелы из числа
+                            Emit.CharterCapital = ulong.Parse(U[0].Replace(" ", String.Empty)); // удаляем пробелы из числа
 
                             string[] V = this.Сurrency(node.InnerText.Split(':')[1]); //вытягиваем валюту из уставного капитала
-                            Emit.currency = (V[V.Length - 1].Replace(" ", String.Empty)); // удаляем пробелы из числа
+                            Emit.CharterCapitalCurrency = (V[V.Length - 1].Replace(" ", String.Empty)); // удаляем пробелы из числа
                             break;
 
                         default:
@@ -219,8 +222,10 @@ namespace RusBounds
             }
             catch(Exception e)
                 {
-                Emit.inn = 0;
-                Console.WriteLine("the page of Emitent not found" + e.Message);
+#if DEBUG
+                Console.WriteLine(e.Message + " " + FullEmitentUrl);
+#endif
+                // on error just return data "as is"
                 return (Emit);                
                 }
             }
@@ -270,6 +275,9 @@ namespace RusBounds
             int CurrentRowIndex = 1;
             int ArrayCurrentElementIndex = 0; // будущий итератор для EmitentArrayToReturn
 
+#if DEBUG
+            CurrentPageIndex = 1;
+#endif
             //выгрузка данных из таблицы постранично и построчно из каждой страницы грида
             do
             {   
@@ -281,7 +289,8 @@ namespace RusBounds
                     };
 
                     // получает веб страницу с гридом для парсинга
-                    HtmlAgilityPack.HtmlDocument CurrentHTMLPageAsDoc = CurrentHTMLPage.Load("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + CurrentPageIndex + "#rslt");
+                    HtmlAgilityPack.HtmlDocument CurrentHTMLPageAsDoc = CurrentHTMLPage.Load("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + 
+                        CurrentPageIndex + "#rslt");
                        
                     do
                     {
@@ -289,12 +298,14 @@ namespace RusBounds
                             if (row != null)
                             {
 #if DEBUG
-                                Console.WriteLine(ArrayCurrentElementIndex+"\t"+ Math.Round(((double)ArrayCurrentElementIndex/((double)RowCounter * (double)PageCounter))*100, 2) + "%\tof "+ RowCounter * PageCounter);
+                                Console.WriteLine(ArrayCurrentElementIndex+"\t"+ Math.Round(((double)ArrayCurrentElementIndex/((double)RowCounter * (double)PageCounter))*100, 2) + 
+                                    "%\tof "+ RowCounter * PageCounter);
 #endif
                                 //получает из строки грида ссылку на эмитент вида "http://www.rusbonds.ru/ank_org.asp?emit=78881"
                                 HtmlNode mhref = row.SelectSingleNode("td[2]/a");
                                 string emithref = mhref.GetAttributeValue("href", null);
                                 EmitentArrayToReturn[ArrayCurrentElementIndex] = this.GetEmitentData(emithref);
+
                                 CurrentRowIndex++;
                             }
                         ArrayCurrentElementIndex++;
@@ -309,12 +320,24 @@ namespace RusBounds
                 catch (Exception ex)
                 {
 #if DEBUG
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.Message + ex.TargetSite);
 #endif
                     break;
                 }
             }
             while (CurrentPageIndex != 300);//заведомо большое число страниц
+
+#if DEBUG
+            Console.WriteLine("Total Emitent count is " + EmitentArrayToReturn.Count());
+#endif
+            #region RemoveEmptyDataFromArray
+            // зачищаем массив перед его возвратом
+            // критерий - присутствие 2х полей - имя эимтента не пустое и
+            EmitentArrayToReturn = EmitentArrayToReturn.Where(CurrentEmitent => !string.IsNullOrEmpty(CurrentEmitent.Issuer)).ToArray();
+            #endregion
+#if DEBUG
+            Console.WriteLine("Purged Emitent count is " + EmitentArrayToReturn.Count());
+#endif
             return (EmitentArrayToReturn);
          }
     }
