@@ -10,6 +10,8 @@ namespace RusBounds3
     {
         static void Main(string[] args)
         {
+            RusBounds.RBParser test = new RusBounds.RBParser();
+            test.GetPageCounter("http://www.rusbonds.ru/srch_simple.asp?go=0&ex=0&s=1&d=1&p=0");
         }
     }
 }
