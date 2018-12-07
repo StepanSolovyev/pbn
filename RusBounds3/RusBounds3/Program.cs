@@ -12,6 +12,7 @@ namespace RusBounds3
         {
             RusBounds.RBParser test = new RusBounds.RBParser();
             test.GetPageCounter("http://www.rusbonds.ru/srch_simple.asp?go=0&ex=0&s=1&d=1&p=0");
+            //test.GetRowCounter("http://www.rusbonds.ru/srch_simple.asp?go=0&ex=0&s=1&d=1&p=0");
         }
     }
 }
