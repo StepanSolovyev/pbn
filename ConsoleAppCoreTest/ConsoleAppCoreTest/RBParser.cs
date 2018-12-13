@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using System.Linq;
 
+
 namespace RusBounds
 {
     /// <summary>  
@@ -57,6 +58,10 @@ namespace RusBounds
         /// Получение общего числа эмитентов
         /// </summary>
         /// <param name="URL">URL на страницу с гридом</param>
+        public RBParser(){
+            // for ubuntu support
+                System.Text.Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        }
         int GetPageCounter(string URL) 
         {
             //счетчик тегов /a[i] с интервалами
@@ -79,6 +84,7 @@ namespace RusBounds
 
             HtmlAgilityPack.HtmlWeb web2 = new HtmlWeb
             {
+
                 OverrideEncoding = Encoding.GetEncoding("Windows-1251")
             };
 
