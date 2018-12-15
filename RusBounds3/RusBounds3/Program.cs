@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RusBounds3
-{
+{//nano edit1
     class Program
     {
         static void Main(string[] args)
