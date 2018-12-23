@@ -161,7 +161,7 @@ namespace RusBounds
             }
             catch { }
             //Console.WriteLine("pageN: ");
-            //  Console.WriteLine(pageN);
+            Console.WriteLine(pageN);
 
             return (pageN);//номер последней страницы (int)
         }
@@ -176,20 +176,14 @@ namespace RusBounds
             webLine.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
             HtmlAgilityPack.HtmlDocument docLine = webLine.Load(URL);
             int nline = 0;
-            int k = 1;
             try
             {
-                do
-                {//"/html/body/div[1]/table[2]/tbody/tr[" + k + "]/td[2]/a"
-                    HtmlNode testc = docLine.DocumentNode.SelectSingleNode("//html/body/div[1]/table[4]/tr[" + k + "]"); // /html[1]/body[1]/div[1]/table[4]/tr[1] - это таблица со страницами
-                    string farLine =testc.InnerHtml;
-                    nline++;
-                    k++;
-                }
-                while (k != 200); //сравнение с общим числом эмитентов или с this.GetMAX("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=1&sort=desc")
+               HtmlNodeCollection testc = docLine.DocumentNode.SelectNodes("//table[@class='tbl_data tbl_headgrid']//tbody//tr"); // /html[1]/body[1]/div[1]/table[4]/tr[1] - это таблица со страницами
+               nline = testc.Count;
             }
-            catch { }
-            //Console.WriteLine("nline: ");
+            catch  (Exception e)
+            { }
+            Console.WriteLine("nline: "+nline );
             return (nline);
         }
     }
