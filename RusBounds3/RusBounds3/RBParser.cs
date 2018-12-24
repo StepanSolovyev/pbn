@@ -15,7 +15,7 @@ namespace RusBounds
         public string BondName;      // облигация, выпуск
         public string ReleaseStatus; // состояние выпуска
         public string RegistrationNumber; // номер регистрации
-        public DateTime? startOfPlacemen;  // начало размещения, тип?
+        public DateTime? StartOfPlacemen;  // начало размещения, тип?
         public DateTime? MaturityDate; // дата погашения
         public ulong  INN;
         public ulong Nominal;
@@ -51,7 +51,7 @@ namespace RusBounds
             BondName = "";
             ReleaseStatus = "";
             RegistrationNumber = "";
-            startOfPlacemen = null;
+            StartOfPlacemen = null;
             MaturityDate = null;
             Nominal = 0;
             NominalCurrency = "";
@@ -79,6 +79,13 @@ namespace RusBounds
 
             
         }
+
+        public void GetBondDataByHref(string href)
+        {
+            //СДЕЛАТЬ: ЗАПОЛНЕНИЕ ПОЛЕЙ ОБЛИГАЦИИ
+            
+        }
+
     }
 
     /// <summary>  
@@ -186,7 +193,120 @@ namespace RusBounds
             Console.WriteLine("nline: "+nline );
             return (nline);
         }
+
+        /// <summary>  
+        ///  Главный метод класса. Возвращает массив структур с заполненными данными по каждой облигации в нём.
+        ///  <returns>Возвращает массив emitent[].</returns>
+        /// </summary>
+        public BondRelease[] Start()
+        {
+            // определяет кол-во страниц в мультистраничном гриде веб страницы
+            int PageCounter = this.GetPageCounter("http://www.rusbonds.ru/srch_simple.asp?go=0&ex=0&s=1&d=1&p=0");
+
+            // определяет кол-во строк на каждой странице грида
+            int RowCounter = this.GetRowCounter("http://www.rusbonds.ru/srch_simple.asp?go=0&ex=0&s=1&d=1&p=0");
+
+            //определение масива структур , его размера (общее количесто эмитентов)
+            BondRelease[] EmitentArrayToReturn = new BondRelease[RowCounter * PageCounter];
+
+            // определяем начальные значения для дальнейшей итерации по многостраничному гриду и массиву эимтентов
+            int CurrentPageIndex = 1;
+            int CurrentRowIndex = 1;
+            int ArrayCurrentElementIndex = 0; // будущий итератор для EmitentArrayToReturn
+
+#if DEBUG
+            CurrentPageIndex = 1;
+#endif
+            //выгрузка данных из таблицы постранично и построчно из каждой страницы грида
+            do
+            {
+                try
+                {
+                    HtmlWeb CurrentHTMLPage = new HtmlWeb
+                    {
+                        OverrideEncoding = Encoding.GetEncoding("Windows-1251")
+                    };
+
+                    // получает веб страницу с гридом для парсинга
+                    HtmlAgilityPack.HtmlDocument CurrentHTMLPageAsDoc = CurrentHTMLPage.Load("http://www.rusbonds.ru/srch_simple.asp?go=0&ex=0&s=1&d=1&p=" +
+                        CurrentPageIndex + "#rslt");
+
+                    do
+                    {
+                        foreach (HtmlNode row in CurrentHTMLPageAsDoc.DocumentNode.SelectNodes("//table[@class='tbl_data tbl_headgrid']//tbody//tr"))  // td[" + CurrentRowIndex + "]"
+                            if (row != null)
+                            {
+#if DEBUG
+                                Console.WriteLine(ArrayCurrentElementIndex + "\t" + Math.Round(((double)ArrayCurrentElementIndex / ((double)RowCounter * (double)PageCounter)) * 100, 2) +
+                                    "%\tof " + RowCounter * PageCounter);
+#endif
+                                HtmlNode CurrentMarketSector = row.SelectSingleNode("td[1]");
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].MarketSector = CurrentMarketSector.InnerHtml;
+                                //получает из строки грида ссылку на эмитент вида "/ank_obl.asp?tool=27929"
+                                HtmlNode CurrentBondName = row.SelectSingleNode("td[2]/a");
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].BondName = CurrentBondName.InnerHtml;
+
+                                HtmlNode mhref = row.SelectSingleNode("td[2]");
+                                string bondhref = mhref.GetAttributeValue("href", null);
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].GetBondDataByHref(bondhref);
+
+                                HtmlNode CurrentReleaseStatus = row.SelectSingleNode("td[3]");
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].ReleaseStatus = CurrentReleaseStatus.InnerHtml;
+
+                                HtmlNode CurrentRegistrationNumber = row.SelectSingleNode("td[4]");
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].RegistrationNumber = CurrentRegistrationNumber.InnerHtml;
+
+                                HtmlNode CurrentStartOfPlacemen = row.SelectSingleNode("td[5]");
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].StartOfPlacemen = DateTime.Parse(CurrentStartOfPlacemen.InnerHtml);
+
+                                HtmlNode CurrentMaturityDate = row.SelectSingleNode("td[6]");
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].MaturityDate = DateTime.Parse(CurrentMaturityDate.InnerHtml);
+
+                                HtmlNode CurrentReleaseStatus = row.SelectSingleNode("td[7]");
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].ReleaseStatus = CurrentReleaseStatus.InnerHtml;
+
+                                HtmlNode CurrentReleaseStatus = row.SelectSingleNode("td[8]");
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].ReleaseStatus = CurrentReleaseStatus.InnerHtml;
+
+                                HtmlNode CurrentReleaseStatus = row.SelectSingleNode("td[9]");
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].ReleaseStatus = CurrentReleaseStatus.InnerHtml;
+
+                                CurrentRowIndex++;
+                            }
+                        ArrayCurrentElementIndex++;
+                    }
+                    //проверка конца массива строк на странице - условие перехода на новую страницу
+                    while (CurrentRowIndex <= RowCounter);
+                    CurrentPageIndex++;
+
+                    //сброс счетчика строк грида при переходе на новую страницу
+                    CurrentRowIndex = 1;
+                }
+                catch (Exception ex)
+                {
+#if DEBUG
+                    Console.WriteLine(ex.Message + ex.TargetSite);
+#endif
+                    break;
+                }
+            }
+            while (CurrentPageIndex != 300);//заведомо большое число страниц
+
+#if DEBUG
+            Console.WriteLine("Total Emitent count is " + EmitentArrayToReturn.Count());
+#endif
+            #region RemoveEmptyDataFromArray
+            // зачищаем массив перед его возвратом
+            // критерий - присутствие 2х полей - имя эимтента не пустое и
+           // EmitentArrayToReturn = EmitentArrayToReturn.Where(CurrentEmitent => !string.IsNullOrEmpty(CurrentEmitent.Issuer)).ToArray();
+            #endregion
+#if DEBUG
+            Console.WriteLine("Purged Emitent count is " + EmitentArrayToReturn.Count());
+#endif
+            return (EmitentArrayToReturn);
+        }
     }
+}
     //        /// <summary>  
     //        ///  Получение данных об эмитенте
     //        /// </summary>
@@ -295,91 +415,6 @@ namespace RusBounds
     //            return (result1);
     //        }
 
-    //        /// <summary>  
-    //        ///  Главный метод класса. Возвращает массив структур с заполненными данными по каждому эмитенту в нём.
-    //        ///  <returns>Возвращает массив emitent[].</returns>
-    //        /// </summary>
-    //        public emitent[] Start()
-    //    {
-    //            // определяет кол-во страниц в мультистраничном гриде веб страницы
-    //            int PageCounter = this.GetPageCounter("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt1#rslt");
 
-    //            // определяет кол-во строк на каждой странице грида
-    //            int RowCounter = this.GetRowCounter("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=1#rslt");
 
-    //            //определение масива структур , его размера (общее количесто эмитентов)
-    //            emitent[] EmitentArrayToReturn = new emitent[RowCounter * PageCounter];
 
-    //            // определяем начальные значения для дальнейшей итерации по многостраничному гриду и массиву эимтентов
-    //            int CurrentPageIndex = 1;
-    //            int CurrentRowIndex = 1;
-    //            int ArrayCurrentElementIndex = 0; // будущий итератор для EmitentArrayToReturn
-
-    //#if DEBUG
-    //            CurrentPageIndex = 1;
-    //#endif
-    //            //выгрузка данных из таблицы постранично и построчно из каждой страницы грида
-    //            do
-    //            {   
-    //                try
-    //                {
-    //                    HtmlWeb CurrentHTMLPage = new HtmlWeb
-    //                    {
-    //                        OverrideEncoding = Encoding.GetEncoding("Windows-1251")
-    //                    };
-
-    //                    // получает веб страницу с гридом для парсинга
-    //                    HtmlAgilityPack.HtmlDocument CurrentHTMLPageAsDoc = CurrentHTMLPage.Load("http://www.rusbonds.ru/srch_emitent.asp?emit=0&cat=0&rg=0&rate=0&stat=0&go=0&s=5&d=0&p=" + 
-    //                        CurrentPageIndex + "#rslt");
-
-    //                    do
-    //                    {
-    //                        foreach (HtmlNode row in CurrentHTMLPageAsDoc.DocumentNode.SelectNodes("/html/body/div[1]/table[2]/tbody/tr[" + CurrentRowIndex + "]"))
-    //                            if (row != null)
-    //                            {
-    //#if DEBUG
-    //                                Console.WriteLine(ArrayCurrentElementIndex+"\t"+ Math.Round(((double)ArrayCurrentElementIndex/((double)RowCounter * (double)PageCounter))*100, 2) + 
-    //                                    "%\tof "+ RowCounter * PageCounter);
-    //#endif
-    //                                //получает из строки грида ссылку на эмитент вида "http://www.rusbonds.ru/ank_org.asp?emit=78881"
-    //                                HtmlNode mhref = row.SelectSingleNode("td[2]/a");
-    //                                string emithref = mhref.GetAttributeValue("href", null);
-    //                                EmitentArrayToReturn[ArrayCurrentElementIndex] = this.GetEmitentData(emithref);
-
-    //                                CurrentRowIndex++;
-    //                            }
-    //                        ArrayCurrentElementIndex++;
-    //                    }
-    //                    //проверка конца массива строк на странице - условие перехода на новую страницу
-    //                    while (CurrentRowIndex <= RowCounter); 
-    //                    CurrentPageIndex++;
-
-    //                    //сброс счетчика строк грида при переходе на новую страницу
-    //                    CurrentRowIndex = 1;
-    //                }
-    //                catch (Exception ex)
-    //                {
-    //#if DEBUG
-    //                    Console.WriteLine(ex.Message + ex.TargetSite);
-    //#endif
-    //                    break;
-    //                }
-    //            }
-    //            while (CurrentPageIndex != 300);//заведомо большое число страниц
-
-    //#if DEBUG
-    //            Console.WriteLine("Total Emitent count is " + EmitentArrayToReturn.Count());
-    //#endif
-    //            #region RemoveEmptyDataFromArray
-    //            // зачищаем массив перед его возвратом
-    //            // критерий - присутствие 2х полей - имя эимтента не пустое и
-    //            EmitentArrayToReturn = EmitentArrayToReturn.Where(CurrentEmitent => !string.IsNullOrEmpty(CurrentEmitent.Issuer)).ToArray();
-    //            #endregion
-    //#if DEBUG
-    //            Console.WriteLine("Purged Emitent count is " + EmitentArrayToReturn.Count());
-    //#endif
-    //            return (EmitentArrayToReturn);
-    //         }
-    //    }
-
-}
