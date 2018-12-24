@@ -38,7 +38,10 @@ namespace ACRA
         {
             HtmlAgilityPack.HtmlWeb web2 = new HtmlWeb();
             HtmlAgilityPack.HtmlDocument doc2 = web2.Load(URL);
-            int allpage = int.Parse((doc2.DocumentNode.SelectSingleNode("/html/body/div[1]/div[5]/div/section/span")).InnerHtml.Split(' ')[2]);
+            // odl method:
+            // int allpage = int.Parse((doc2.DocumentNode.SelectSingleNode("/html/body/div[1]/div[5]/div/section/span")).InnerHtml.Split(' ')[2]);
+            HtmlNode tempnode = doc2.DocumentNode.SelectSingleNode("//*[@id='search-results']/div/section/span");
+            int allpage = int.Parse(tempnode.InnerHtml.Split(' ')[2]);
             return (allpage);
         }
 
@@ -55,14 +58,16 @@ namespace ACRA
                 {
                     do
                     {
-                        string farLine = (docLine.DocumentNode.SelectSingleNode("/html/body/div[1]/div[5]/div[1]/section/table/tbody/tr[" + k + "]/td/a")).InnerHtml;
+                        string farLine = (docLine.DocumentNode.SelectSingleNode("//*[@id='search-results']/div/section/table/tbody/tr[" + k + "]/td/a")).InnerHtml;
                         nline++;
                         k++;
                     }
                     while (k != 200); //сравнение с общим числом эмитентов или с this.GetMAX("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=1&sort=desc")
             }
                 
-                catch { }
+                catch(Exception e ){
+                // no actions required just return value
+            }
             
          return (nline);
         }
@@ -109,7 +114,7 @@ namespace ACRA
                 HtmlAgilityPack.HtmlDocument doc1 = web1.Load("https://www.acra-ratings.ru/ratings/issuers?order=date_from&page=" + i + "&sort=desc");
                 try
                 {   //проверка наличия строки "Найдено документов: 155"
-                    var far = doc1.DocumentNode.SelectSingleNode("/html/body/div[1]/div[5]/div/section/span");
+                    var far = doc1.DocumentNode.SelectSingleNode("//*[@id='search-results']/div/section/span");
                     string enddo = far.InnerHtml;
                     
 #if DEBUG
@@ -122,7 +127,7 @@ namespace ACRA
                                                             
                     do
                     {
-                        foreach (HtmlNode row in docALL1.DocumentNode.SelectNodes("/html/body/div[1]/div[5]/div[1]/section/table/tbody/tr[" + num + "]"))
+                        foreach (HtmlNode row in docALL1.DocumentNode.SelectNodes("//*[@id='search-results']/div[1]/section/table/tbody/tr[" + num + "]"))
                             if (row != null)
                             {
 #if DEBUG
