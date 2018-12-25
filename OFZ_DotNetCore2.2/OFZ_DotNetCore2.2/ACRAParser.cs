@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using System.Linq;
 namespace ACRA
 
 {
@@ -33,6 +32,10 @@ namespace ACRA
     }
     public class ACRAParser
     {
+        public ACRAParser(){
+            // for ubuntu support
+            System.Text.Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        }
         //получение общего числа эмитентов из строки вида "Найдено документов: 155":
         public int GetMAX(string URL)
         {
