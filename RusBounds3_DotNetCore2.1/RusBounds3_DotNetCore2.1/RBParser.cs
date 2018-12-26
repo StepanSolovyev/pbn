@@ -15,7 +15,7 @@ namespace RusBounds
         public string BondName;      // облигация, выпуск
         public string ReleaseStatus; // состояние выпуска
         public string RegistrationNumber; // номер регистрации
-        public DateTime? StartOfPlacemen;  // начало размещения, тип?
+        public DateTime? StartOfPlacement;  // начало размещения, тип?
         public DateTime? MaturityDate; // дата погашения
         public ulong  INN;
         public ulong Nominal;
@@ -51,7 +51,7 @@ namespace RusBounds
             BondName = "";
             ReleaseStatus = "";
             RegistrationNumber = "";
-            StartOfPlacemen = null;
+            StartOfPlacement = null;
             MaturityDate = null;
             Nominal = 0;
             NominalCurrency = "";
@@ -264,12 +264,24 @@ namespace RusBounds
                                 HtmlNode CurrentRegistrationNumber = row.SelectSingleNode("td[4]");
                                 EmitentArrayToReturn[ArrayCurrentElementIndex].RegistrationNumber = CurrentRegistrationNumber.InnerHtml;
 
-                                HtmlNode CurrentStartOfPlacemen = row.SelectSingleNode("td[5]");
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].StartOfPlacemen = DateTime.Parse(CurrentStartOfPlacemen.InnerHtml);
+                                HtmlNode CurrentStartOfPlacement = row.SelectSingleNode("td[5]");
+                                if (CurrentStartOfPlacement.InnerText == "&nbsp;")
+                                { EmitentArrayToReturn[ArrayCurrentElementIndex].StartOfPlacement = null; }
+                                else
+                                {
+                                    EmitentArrayToReturn[ArrayCurrentElementIndex].StartOfPlacement = DateTime.Parse(CurrentStartOfPlacement.InnerHtml);
+                                }
 
                                 HtmlNode CurrentMaturityDate = row.SelectSingleNode("td[6]");
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].MaturityDate = DateTime.Parse(CurrentMaturityDate.InnerHtml);
+                                if (CurrentMaturityDate.InnerText == "&nbsp;")
+                                {
+                                    EmitentArrayToReturn[ArrayCurrentElementIndex].MaturityDate = null;
+                                }
+                                else
+                                {
 
+                                    EmitentArrayToReturn[ArrayCurrentElementIndex].MaturityDate = DateTime.Parse(CurrentMaturityDate.InnerHtml);
+                                }
                                 CurrentRowIndex++;
                             }
                         ArrayCurrentElementIndex++;
