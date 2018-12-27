@@ -83,6 +83,28 @@ namespace RusBounds
         public void GetBondDataByHref(string href)
         {
             //СДЕЛАТЬ: ЗАПОЛНЕНИЕ ПОЛЕЙ ОБЛИГАЦИИ
+            try {
+                    // получает веб страницу с гридом для парсинга
+                    HtmlWeb CurrentHTMLPage = new HtmlWeb
+                    {
+                        OverrideEncoding = Encoding.GetEncoding("Windows-1251")
+                    };                
+                    HtmlAgilityPack.HtmlDocument CurrentHTMLPageAsDoc = CurrentHTMLPage.Load("http://rusbonds.ru"+href.Replace("\"",""));
+                    
+                    HtmlNodeCollection tempNodeSet = CurrentHTMLPageAsDoc.DocumentNode.SelectNodes("//table");
+                    // парсим таблицу с данными по выпуску облигаций построчно
+                    foreach (HtmlNode row in tempNodeSet) {
+                            if (row != null){
+
+
+
+                            }
+
+                    }
+            }
+            catch {}
+
+
             
         }
 
@@ -255,7 +277,8 @@ namespace RusBounds
                                 EmitentArrayToReturn[ArrayCurrentElementIndex].BondName = CurrentBondName.InnerHtml;
 
                                 HtmlNode mhref = row.SelectSingleNode("td[2]");
-                                string bondhref = mhref.GetAttributeValue("href", null);
+                                string bondhref = mhref.InnerHtml.Split("\"")[1];
+
                                 EmitentArrayToReturn[ArrayCurrentElementIndex].GetBondDataByHref(bondhref);
 
                                 HtmlNode CurrentReleaseStatus = row.SelectSingleNode("td[3]");
@@ -318,114 +341,3 @@ namespace RusBounds
         }
     }
 }
-    //        /// <summary>  
-    //        ///  Получение данных об эмитенте
-    //        /// </summary>
-    //        /// <param name="emithref">Относительный URL на странице которого находится грид с анкетой компании</param>
-    //        emitent GetEmitentData(string emithref)
-    //        {
-    //            emitent Emit = new emitent(int.Parse(emithref.Split('=')[1]));
-    //            string FullEmitentUrl = "http://www.rusbonds.ru" + emithref;
-    //            try
-    //            {
-    //                HtmlAgilityPack.HtmlWeb web1 = new HtmlWeb();
-    //                web1.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
-    //                HtmlAgilityPack.HtmlDocument doc1 = web1.Load(FullEmitentUrl);
-    //                //Emit.emit = int.Parse(idemitent);
-
-    //                HtmlNodeCollection EmitentInfo = doc1.DocumentNode.SelectNodes("/html//body/table[4]//tbody/tr");
-    //                foreach(HtmlNode node in EmitentInfo)
-    //                {
-    //                    string swch = node.InnerText.Split(':')[0];
-    //                    switch (swch)
-    //                    {
-    //                        case "Наименование":
-    //                            Emit.Issuer = node.InnerText.Split(':')[1];
-    //                            break;
-    //                        case "Основной ОКВЭД":
-    //                            Emit.TypeOfBusiness = node.InnerText.Split(':')[1];
-    //                            break;
-    //                        case "Страна":
-    //                            Emit.Country = node.InnerText.Split(':')[1];
-    //                            break;
-
-    //                        case "Регион":
-    //                            Emit.Region = node.InnerText.Split(':')[1];
-    //                            break;
-
-    //                        case "ИНН":
-    //                            Emit.INN = ulong.Parse(node.InnerText.Split(':')[1]);
-    //                            break;
-
-    //                        case "ОКПО или др.":
-    //                            Emit.OKPO = node.InnerText.Split(':')[1];
-    //                            break;
-
-    //                        case "Данные госрегистрации":
-    //                            Emit.GosRegData = node.InnerText.Split(':')[1];
-    //                            break;
-
-    //                        case "Юридический адрес":
-    //                            Emit.LowAddress = node.InnerText.Split(':')[1];
-    //                            break;
-
-    //                        case "Почтовый адрес":
-    //                            Emit.MailingAddress = node.InnerText.Split(':')[1];
-    //                            break;
-    //                        case "Вид собственности":
-    //                            Emit.TypeOfProperty = node.InnerText.Split(':')[1];
-    //                            break;
-
-    //                        case "Уставный капитал":
-    //                            string[] U = this.GetCapital(node.InnerText.Split(':')[1]); //вытягиваем число с пробелами из уставного капитала до букв валюты   
-    //                            Emit.CharterCapital = ulong.Parse(U[0].Replace(" ", String.Empty)); // удаляем пробелы из числа
-
-    //                            string[] V = this.Сurrency(node.InnerText.Split(':')[1]); //вытягиваем валюту из уставного капитала
-    //                            Emit.CharterCapitalCurrency = (V[V.Length - 1].Replace(" ", String.Empty)); // удаляем пробелы из числа
-    //                            break;
-
-    //                        default:
-    //                            break;
-    //                    }                 
-    //                }                
-
-    //                return (Emit);
-    //            }
-    //            catch(Exception e)
-    //                {
-    //#if DEBUG
-    //                Console.WriteLine(e.Message + " " + FullEmitentUrl);
-    //#endif
-    //                // on error just return data "as is"
-    //                return (Emit);                
-    //                }
-    //            }
-    //        /// <summary>  
-    //        ///  Получение числа уставного капитала до валюты со сплитом строки 
-    //        /// </summary>
-    //        /// <param name="Val">Исходная строка в формате "10 100 000 000 RUR"</param>
-    //        string[] GetCapital(string Val) 
-    //        {
-    //            string pattern = "[A-Z]+";
-    //            string[] result = Regex.Split(Val, pattern,
-    //                                          RegexOptions.IgnoreCase);
-    //            return (result);
-    //        }
-
-    //        /// <summary>  
-    //        ///  Получение типа валюты уставного капитала
-    //        /// </summary>
-    //        /// <param name="Val1">Исходная строка в формате "10 100 000 000 RUR"</param>
-    //        string[] Сurrency(string Val1)
-    //        {
-    //            string pattern = "[0-9]";
-    //            //string input = "Abc1234Def5678Ghi9012Jklm";
-    //           string[] result1 = Regex.Split(Val1, pattern,
-    //                                          RegexOptions.IgnoreCase);
-
-    //            return (result1);
-    //        }
-
-
-
-
