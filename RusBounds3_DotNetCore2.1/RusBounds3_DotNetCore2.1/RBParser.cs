@@ -80,7 +80,7 @@ namespace RusBounds
             
         }
 
-        public void GetBondDataByHref(string href)
+        public void SetBondDataByHref(string href)
         {
             //СДЕЛАТЬ: ЗАПОЛНЕНИЕ ПОЛЕЙ ОБЛИГАЦИИ
             try {
@@ -91,7 +91,7 @@ namespace RusBounds
                     };                
                     HtmlAgilityPack.HtmlDocument CurrentHTMLPageAsDoc = CurrentHTMLPage.Load("http://rusbonds.ru"+href.Replace("\"",""));
                     
-                    HtmlNodeCollection tempNodeSet = CurrentHTMLPageAsDoc.DocumentNode.SelectNodes("//table");
+                    HtmlNodeCollection tempNodeSet = CurrentHTMLPageAsDoc.DocumentNode.SelectNodes("//html/body/table[4]/tr/td[4]/table[6]");
                     // парсим таблицу с данными по выпуску облигаций построчно
                     foreach (HtmlNode row in tempNodeSet) {
                             if (row != null){
@@ -107,7 +107,38 @@ namespace RusBounds
 
             
         }
+        public ulong GetEmitentINNByHref(string href)
+        {
+            try
+            {
+                // получает веб страницу для парсинга
+                HtmlWeb CurrentHTMLPage = new HtmlWeb
+                {
+                    OverrideEncoding = Encoding.GetEncoding("Windows-1251")
+                };
+                HtmlAgilityPack.HtmlDocument CurrentHTMLPageAsDoc = CurrentHTMLPage.Load("http://rusbonds.ru" + href.Replace("\"", ""));
 
+                HtmlNodeCollection tempNodesCollection = CurrentHTMLPageAsDoc.DocumentNode.SelectNodes("//html/body/table[4]/tr/td[4]/table[7]//tr"); ///html/body/table[4]/tbody/tr/td[4]/table[7]/tbody/tr[2]/td[1]
+                ulong TempINN;
+                foreach (HtmlNode node in tempNodesCollection)
+                {
+                    string swch = node.InnerText.Split(':')[0];
+                    switch (swch)
+                    {
+                        case "ИНН":
+                            TempINN = ulong.Parse(node.InnerText.Split(':')[1]);
+                            return TempINN;
+                            break;
+
+                        default:
+                            break;
+                    }
+                 
+                }
+                return 0;
+            }
+            catch { return 0; }
+        }
     }
 
     /// <summary>  
@@ -230,6 +261,10 @@ namespace RusBounds
         /// </summary>
         public BondRelease[] Start()
         {
+#if DEBUG
+           //BondRelease Test = new BondRelease();
+            //Test.GetEmitentINNByHref("/ank_org.asp?emit=89952");
+#endif
             // определяет кол-во страниц в мультистраничном гриде веб страницы
             int PageCounter = this.GetPageCounter("http://www.rusbonds.ru/srch_simple.asp?go=0&ex=0&s=1&d=1&p=0");
 
@@ -279,7 +314,7 @@ namespace RusBounds
                                 HtmlNode mhref = row.SelectSingleNode("td[2]");
                                 string bondhref = mhref.InnerHtml.Split("\"")[1];
 
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].GetBondDataByHref(bondhref);
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].SetBondDataByHref(bondhref);
 
                                 HtmlNode CurrentReleaseStatus = row.SelectSingleNode("td[3]");
                                 EmitentArrayToReturn[ArrayCurrentElementIndex].ReleaseStatus = CurrentReleaseStatus.InnerHtml;
