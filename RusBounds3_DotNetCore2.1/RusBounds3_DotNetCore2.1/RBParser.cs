@@ -91,17 +91,58 @@ namespace RusBounds
                     };                
                     HtmlAgilityPack.HtmlDocument CurrentHTMLPageAsDoc = CurrentHTMLPage.Load("http://rusbonds.ru"+href.Replace("\"",""));
                     
-                    HtmlNodeCollection tempNodeSet = CurrentHTMLPageAsDoc.DocumentNode.SelectNodes("//html/body/table[4]/tr/td[4]/table[6]");
+                    HtmlNodeCollection tempNodeSet = CurrentHTMLPageAsDoc.DocumentNode.SelectNodes("//html/body/table[4]/tr/td[4]/table[6]//tr");
                     // парсим таблицу с данными по выпуску облигаций построчно
-                    foreach (HtmlNode row in tempNodeSet) {
-                            if (row != null){
+                   foreach(HtmlNode node in tempNodeSet)
+                            {
+                                string swch = node.InnerText.Split(':')[0];
+                                string value = node.InnerText.Split(':')[1];
+                                switch (swch)
+                                {
+                                    case "Наименование":
+                                    this.BondNameFull = value;
+                                    break;
+
+                                    case "Состояние выпуска":
+                                    this.ReleaseStatus = value; break;
+
+                                    case "Данные госрегистрации":
+                                    this.StateRegistrationData = value; break;
+
+                                    case "Номинал":
+                                    this.Nominal = ulong.Parse(value); break;
+                                    
+                                    case "Объем эмиссии, шт.":
+                                    this.EmissionVolume = ulong.Parse(value); break;
+
+                                    case "Объем эмиссии":
+                                    this.EmissionVolume = ulong.Parse(value); break;
+
+                                    case "Объем в обращении, шт":
+                                    this.VolumeOutstanding = ulong.Parse(value);break;
+
+                                    case "Объем в обращении":
+                                    this.VolumeOutstandingCount = ulong.Parse(value);break;
+
+                                    case "КУПОН - Переменный":
+                                    break;
+
+                                    case "Периодичность выплат в год":
+                                    break;
+                                    case "Текущий купон (всего)":
+                                    break;
+                                    case "НКД":
+                                    this.NKD = float.Parse(value);break;
 
 
 
+                                        default:
+                                        break;
+                                }
                             }
 
-                    }
-            }
+                    
+                }
             catch {}
 
 
@@ -128,8 +169,6 @@ namespace RusBounds
                         case "ИНН":
                             TempINN = ulong.Parse(node.InnerText.Split(':')[1]);
                             return TempINN;
-                            break;
-
                         default:
                             break;
                     }
