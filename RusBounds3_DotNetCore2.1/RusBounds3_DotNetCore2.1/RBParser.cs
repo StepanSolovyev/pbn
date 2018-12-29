@@ -25,8 +25,8 @@ namespace RusBounds
         public string StateRegistrationData; // данные гос регистрации
         public ulong ISIN;
         public ulong EmissionVolume; // в шт
-        public string  VolumeOfIssue;
-        public ulong IssueCurrency;
+        public ulong  VolumeOfIssue;
+        public string IssueCurrency;
         public ulong VolumeOutstandingCount; // Объем в обращении шт 
         public ulong VolumeOutstanding;
         public string VolumeOutstandingCurrency;
@@ -60,8 +60,8 @@ namespace RusBounds
             StateRegistrationData = "";
             ISIN = 0;
             EmissionVolume = 0;
-            VolumeOfIssue = "";
-            IssueCurrency = 0;
+            VolumeOfIssue = 0;
+            IssueCurrency = "";
             VolumeOutstandingCount = 0;
             VolumeOutstanding = 0;
             VolumeOutstandingCurrency = "";
@@ -95,55 +95,81 @@ namespace RusBounds
                     // парсим таблицу с данными по выпуску облигаций построчно
                    foreach(HtmlNode node in tempNodeSet)
                             {
-                                string swch = node.InnerText.Split(':')[0];
-                                string value = node.InnerText.Split(':')[1];
+                                string[] SwchValueKeyPair = node.InnerText.Split(':');
+                                if(SwchValueKeyPair.Count() > 2 || SwchValueKeyPair.Count() < 2 )continue;
+                                string swch = SwchValueKeyPair[0];
+                                string value = SwchValueKeyPair[1];
+                                
                                 switch (swch)
                                 {
+                                    // table 7 switch
+
+
                                     case "Наименование":
                                     this.BondNameFull = value;
                                     break;
 
-                                    case "Состояние выпуска":
-                                    this.ReleaseStatus = value; break;
+                                    // already exist at table 6
+                                    //case "Состояние выпуска":
+                                    //this.ReleaseStatus = value; break;
 
                                     case "Данные госрегистрации":
                                     this.StateRegistrationData = value; break;
 
-                                    case "Номинал":
-                                    this.Nominal = ulong.Parse(value); break;
+                                    // already exist at table 6
+                                    //case "Номинал":
+                                    //this.Nominal = ulong.Parse(value); break;
                                     
                                     case "Объем эмиссии, шт.":
-                                    this.EmissionVolume = ulong.Parse(value); break;
+                                    this.EmissionVolume = ulong.Parse(value.Replace(" ",String.Empty)); break;
 
                                     case "Объем эмиссии":
-                                    this.EmissionVolume = ulong.Parse(value); break;
+                                    string[] SplittedArray = value.Split("&nbsp;");
+                                    this.VolumeOfIssue = ulong.Parse(SplittedArray[0].Replace(" ",String.Empty));
+                                    this.IssueCurrency = SplittedArray[1]; break;
 
                                     case "Объем в обращении, шт":
                                     this.VolumeOutstanding = ulong.Parse(value);break;
 
                                     case "Объем в обращении":
-                                    this.VolumeOutstandingCount = ulong.Parse(value);break;
+                                    string[] VolumeOutstandingSplittedArray = value.Split("&nbsp;");
+                                    this.VolumeOutstandingCount = ulong.Parse(VolumeOutstandingSplittedArray[0].Replace(" ",String.Empty));
+                                    this.VolumeOutstandingCurrency = VolumeOutstandingSplittedArray[1]; break;
+                                    
+                                    //this.PeriodOfTreatmentDays
+                                    //this.DaysToMaturity
+                                    //this.DateOfTheNearestOffer
+                                    
 
                                     case "КУПОН - Переменный":
                                     break;
 
                                     case "Периодичность выплат в год":
+                                    //this.FrequencyOfPaymentsPerYear;
                                     break;
+                                    //this.CouponPaymentDate;
+                                    //this.CouponPerAnnum
+                                    
                                     case "Текущий купон (всего)":
                                     break;
                                     case "НКД":
-                                    this.NKD = float.Parse(value);break;
+                                    string[] NKDSplittedArray = value.Split("&nbsp;");
+                                    this.NKD = float.Parse(NKDSplittedArray[0].Replace(" ",String.Empty));
+                                    this.NKDCurrency = NKDSplittedArray[1]; break;
 
+                                    //this.NKDCurrency
 
 
                                         default:
                                         break;
                                 }
                             }
-
+                //navigate to nex table 7 (emitent page)
+                this.INN = this.GetEmitentINNByHref(CurrentHTMLPageAsDoc.DocumentNode.SelectSingleNode("//html/body/table[4]/tr/td[4]/table[3]/tr/td[2]/a").GetAttributeValue("href",""));
                     
                 }
             catch {}
+            
 
 
             
@@ -159,7 +185,7 @@ namespace RusBounds
                 };
                 HtmlAgilityPack.HtmlDocument CurrentHTMLPageAsDoc = CurrentHTMLPage.Load("http://rusbonds.ru" + href.Replace("\"", ""));
 
-                HtmlNodeCollection tempNodesCollection = CurrentHTMLPageAsDoc.DocumentNode.SelectNodes("//html/body/table[4]/tr/td[4]/table[7]//tr"); ///html/body/table[4]/tbody/tr/td[4]/table[7]/tbody/tr[2]/td[1]
+                HtmlNodeCollection tempNodesCollection = CurrentHTMLPageAsDoc.DocumentNode.SelectNodes("//html/body/table[4]/tr/td[4]/table[7]//tr"); 
                 ulong TempINN;
                 foreach (HtmlNode node in tempNodesCollection)
                 {
