@@ -18,8 +18,8 @@ namespace RusBounds
         public DateTime? StartOfPlacement;  // начало размещения, тип?
         public DateTime? MaturityDate; // дата погашения
         public ulong  INN;
-        public ulong Nominal;
-        public string NominalCurrency;
+        //public ulong Nominal;
+        //public string NominalCurrency;
         
         public string BondNameFull; // полное имя облигации, выпуска
         public string StateRegistrationData; // данные гос регистрации
@@ -53,8 +53,8 @@ namespace RusBounds
             RegistrationNumber = "";
             StartOfPlacement = null;
             MaturityDate = null;
-            Nominal = 0;
-            NominalCurrency = "";
+            //Nominal = 0;
+            //NominalCurrency = "";
 
             BondNameFull = "";
             StateRegistrationData = "";
@@ -129,35 +129,40 @@ namespace RusBounds
                                     this.IssueCurrency = SplittedArray[1]; break;
 
                                     case "Объем в обращении, шт":
-                                    this.VolumeOutstanding = ulong.Parse(value);break;
+                                    this.VolumeOutstanding = ulong.Parse(value.Replace(" ", String.Empty)); break;
 
                                     case "Объем в обращении":
                                     string[] VolumeOutstandingSplittedArray = value.Split("&nbsp;");
                                     this.VolumeOutstandingCount = ulong.Parse(VolumeOutstandingSplittedArray[0].Replace(" ",String.Empty));
                                     this.VolumeOutstandingCurrency = VolumeOutstandingSplittedArray[1]; break;
-                                    
-                                    //this.PeriodOfTreatmentDays
+
+                                    case "Период обращения, дней":
+                                    this.PeriodOfTreatmentDays = ulong.Parse(value); break;
+
+                                    case "Дней до погашения":
+                                    this.DaysToMaturity = ulong.Parse(value); break;
                                     //this.DaysToMaturity
                                     //this.DateOfTheNearestOffer
-                                    
-
-                                    case "КУПОН - Переменный":
-                                    break;
+                                                                      
 
                                     case "Периодичность выплат в год":
-                                    //this.FrequencyOfPaymentsPerYear;
+                                    this.FrequencyOfPaymentsPerYear = ulong.Parse(value);
                                     break;
-                                    //this.CouponPaymentDate;
-                                    //this.CouponPerAnnum
-                                    
-                                    case "Текущий купон (всего)":
-                                    break;
+
+                                    case "Дата выплаты купона":
+                                    this.CouponPaymentDate = DateTime.Parse(value); break;
+
+                                    case "Размер купона, % годовых":
+                                    this.CouponPerAnnum = float.Parse(value); break;
+
+                                    //case "Текущий купон (всего)":
+                                    //           break;
                                     case "НКД":
                                     string[] NKDSplittedArray = value.Split("&nbsp;");
                                     this.NKD = float.Parse(NKDSplittedArray[0].Replace(" ",String.Empty));
                                     this.NKDCurrency = NKDSplittedArray[1]; break;
 
-                                    //this.NKDCurrency
+                                    
 
 
                                         default:
@@ -406,8 +411,9 @@ namespace RusBounds
                                     EmitentArrayToReturn[ArrayCurrentElementIndex].MaturityDate = DateTime.Parse(CurrentMaturityDate.InnerHtml);
                                 }
                                 CurrentRowIndex++;
+
+                                ArrayCurrentElementIndex++;
                             }
-                        ArrayCurrentElementIndex++;
                     }
                     //проверка конца массива строк на странице - условие перехода на новую страницу
                     while (CurrentRowIndex <= RowCounter);
