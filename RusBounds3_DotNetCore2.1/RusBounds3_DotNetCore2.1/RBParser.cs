@@ -93,6 +93,7 @@ namespace RusBounds
                     
                     HtmlNodeCollection tempNodeSet = CurrentHTMLPageAsDoc.DocumentNode.SelectNodes("//html/body/table[4]/tr/td[4]/table[6]//tr");
                     // парсим таблицу с данными по выпуску облигаций построчно
+                    // test string
                    foreach(HtmlNode node in tempNodeSet)
                             {
                                 string[] SwchValueKeyPair = node.InnerText.Split(':');
