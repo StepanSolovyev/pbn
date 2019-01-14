@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using System.Linq;
+using System.Globalization;
 
 namespace RusBounds
 {
@@ -23,7 +24,7 @@ namespace RusBounds
         
         public string BondNameFull; // полное имя облигации, выпуска
         public string StateRegistrationData; // данные гос регистрации
-        public ulong ISIN;
+        public string ISIN; //в ТЗ тип ulong !!!
         public ulong EmissionVolume; // в шт
         public ulong  VolumeOfIssue;
         public string IssueCurrency;
@@ -58,7 +59,7 @@ namespace RusBounds
 
             BondNameFull = "";
             StateRegistrationData = "";
-            ISIN = 0;
+            ISIN = "";
             EmissionVolume = 0;
             VolumeOfIssue = 0;
             IssueCurrency = "";
@@ -71,7 +72,7 @@ namespace RusBounds
             FrequencyOfPaymentsPerYear = 0;
             CouponPaymentDate = null;
             CouponPerAnnum = 0.0F;
-            NKD = 0.0F;
+            NKD =  0.0F;
             NKDCurrency = "";
             INN = 0;
 
@@ -110,9 +111,13 @@ namespace RusBounds
                                     this.BondNameFull = value;
                                     break;
 
-                                    // already exist at table 6
-                                    //case "Состояние выпуска":
-                                    //this.ReleaseStatus = value; break;
+                        // already exist at table 6
+                        //case "Состояние выпуска":
+                        //this.ReleaseStatus = value; break;
+
+                                    case "ISIN код":
+                                    this.ISIN = value;
+                                    break;
 
                                     case "Данные госрегистрации":
                                     this.StateRegistrationData = value; break;
@@ -142,9 +147,14 @@ namespace RusBounds
 
                                     case "Дней до погашения":
                                     this.DaysToMaturity = ulong.Parse(value); break;
-                                    //this.DaysToMaturity
-                                    //this.DateOfTheNearestOffer
-                                                                      
+
+                                    case "Дата ближайшей оферты":
+                                    try
+                                    {
+                                    this.DateOfTheNearestOffer = DateTime.Parse(value); 
+                                    }
+                                    catch { this.DateOfTheNearestOffer = null; }
+                                    break;
 
                                     case "Периодичность выплат в год":
                                     this.FrequencyOfPaymentsPerYear = ulong.Parse(value);
@@ -160,7 +170,15 @@ namespace RusBounds
                                     //           break;
                                     case "НКД":
                                     string[] NKDSplittedArray = value.Split("&nbsp;");
-                                    this.NKD = float.Parse(NKDSplittedArray[0].Replace(" ",String.Empty));
+                                    try
+                                    {   string NKDSTRING = NKDSplittedArray[0].Replace(" ", String.Empty);
+                                        this.NKD = float.Parse(NKDSTRING, CultureInfo.InvariantCulture);
+                                    }
+                                    catch
+                                    {
+                                    string NKDSTRING = NKDSplittedArray[0];
+                                    this.NKD = float.Parse(NKDSTRING);
+                                    }
                                     this.NKDCurrency = NKDSplittedArray[1]; break;
 
                                     
