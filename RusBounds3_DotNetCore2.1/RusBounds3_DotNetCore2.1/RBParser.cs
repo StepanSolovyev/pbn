@@ -164,21 +164,23 @@ namespace RusBounds
                                     this.CouponPaymentDate = DateTime.Parse(value); break;
 
                                     case "Размер купона, % годовых":
-                                    this.CouponPerAnnum = float.Parse(value); break;
+                                    try
+                                    {
+                                        System.Globalization.CultureInfo[] providers = { new System.Globalization.CultureInfo("en-US"), new System.Globalization.CultureInfo("ru-RU") };
+                                        this.CouponPerAnnum = float.Parse(value.Replace(" ", String.Empty), providers[1]); 
+                                    }
+                                    catch { }
+                                    break;
 
-                                    //case "Текущий купон (всего)":
-                                    //           break;
                                     case "НКД":
                                     string[] NKDSplittedArray = value.Split("&nbsp;");
                                     try
                                     {   string NKDSTRING = NKDSplittedArray[0].Replace(" ", String.Empty);
-                                        this.NKD = float.Parse(NKDSTRING, CultureInfo.InvariantCulture);
+                                        System.Globalization.CultureInfo[] providers = { new System.Globalization.CultureInfo("en-US"), new System.Globalization.CultureInfo("ru-RU") };
+                                        this.NKD = float.Parse(NKDSTRING, providers[1]);
                                     }
                                     catch
-                                    {
-                                    string NKDSTRING = NKDSplittedArray[0];
-                                    this.NKD = float.Parse(NKDSTRING);
-                                    }
+                                    {}
                                     this.NKDCurrency = NKDSplittedArray[1]; break;
 
                                     
