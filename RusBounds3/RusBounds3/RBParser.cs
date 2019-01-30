@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using System.Linq;
+using System.Globalization;
 
 namespace RusBounds
 {
@@ -15,18 +16,18 @@ namespace RusBounds
         public string BondName;      // облигация, выпуск
         public string ReleaseStatus; // состояние выпуска
         public string RegistrationNumber; // номер регистрации
-        public DateTime? StartOfPlacemen;  // начало размещения, тип?
+        public DateTime? StartOfPlacement;  // начало размещения, тип?
         public DateTime? MaturityDate; // дата погашения
         public ulong  INN;
-        public ulong Nominal;
-        public string NominalCurrency;
+        //public ulong Nominal;
+        //public string NominalCurrency;
         
         public string BondNameFull; // полное имя облигации, выпуска
         public string StateRegistrationData; // данные гос регистрации
-        public ulong ISIN;
+        public string ISIN; //в ТЗ тип ulong !!!
         public ulong EmissionVolume; // в шт
-        public string  VolumeOfIssue;
-        public ulong IssueCurrency;
+        public ulong  VolumeOfIssue;
+        public string IssueCurrency;
         public ulong VolumeOutstandingCount; // Объем в обращении шт 
         public ulong VolumeOutstanding;
         public string VolumeOutstandingCurrency;
@@ -51,17 +52,17 @@ namespace RusBounds
             BondName = "";
             ReleaseStatus = "";
             RegistrationNumber = "";
-            StartOfPlacemen = null;
+            StartOfPlacement = null;
             MaturityDate = null;
-            Nominal = 0;
-            NominalCurrency = "";
+            //Nominal = 0;
+            //NominalCurrency = "";
 
             BondNameFull = "";
             StateRegistrationData = "";
-            ISIN = 0;
+            ISIN = "";
             EmissionVolume = 0;
-            VolumeOfIssue = "";
-            IssueCurrency = 0;
+            VolumeOfIssue = 0;
+            IssueCurrency = "";
             VolumeOutstandingCount = 0;
             VolumeOutstanding = 0;
             VolumeOutstandingCurrency = "";
@@ -71,7 +72,7 @@ namespace RusBounds
             FrequencyOfPaymentsPerYear = 0;
             CouponPaymentDate = null;
             CouponPerAnnum = 0.0F;
-            NKD = 0.0F;
+            NKD =  0.0F;
             NKDCurrency = "";
             INN = 0;
 
@@ -80,12 +81,157 @@ namespace RusBounds
             
         }
 
-        public void GetBondDataByHref(string href)
+        public void SetBondDataByHref(string href)
         {
             //СДЕЛАТЬ: ЗАПОЛНЕНИЕ ПОЛЕЙ ОБЛИГАЦИИ
+            try {
+                    // получает веб страницу с гридом для парсинга
+                    HtmlWeb CurrentHTMLPage = new HtmlWeb
+                    {
+                        OverrideEncoding = Encoding.GetEncoding("Windows-1251")
+                    };                
+                    HtmlAgilityPack.HtmlDocument CurrentHTMLPageAsDoc = CurrentHTMLPage.Load("http://rusbonds.ru"+href.Replace("\"",""));
+                    
+                    HtmlNodeCollection tempNodeSet = CurrentHTMLPageAsDoc.DocumentNode.SelectNodes("//html/body/table[4]/tr/td[4]/table[6]//tr");
+                    // парсим таблицу с данными по выпуску облигаций построчно
+                    // test string
+                   foreach(HtmlNode node in tempNodeSet)
+                            {
+                                string[] SwchValueKeyPair = node.InnerText.Split(':');
+                                if(SwchValueKeyPair.Count() > 2 || SwchValueKeyPair.Count() < 2 )continue;
+                                string swch = SwchValueKeyPair[0];
+                                string value = SwchValueKeyPair[1];
+                                
+                                switch (swch)
+                                {
+                                    // table 7 switch
+
+
+                                    case "Наименование":
+                                    this.BondNameFull = value;
+                                    break;
+
+                        // already exist at table 6
+                        //case "Состояние выпуска":
+                        //this.ReleaseStatus = value; break;
+
+                                    case "ISIN код":
+                                    this.ISIN = value;
+                                    break;
+
+                                    case "Данные госрегистрации":
+                                    this.StateRegistrationData = value;
+                                    break;
+
+                                    // already exist at table 6
+                                    //case "Номинал":
+                                    //this.Nominal = ulong.Parse(value); break;
+                                    
+                                    case "Объем эмиссии, шт.":
+                                    this.EmissionVolume = ulong.Parse(value.Replace(" ",String.Empty)); break;
+
+                                    case "Объем эмиссии":
+                                    string[] SplittedArray = value.Split("&nbsp;");
+                                    this.VolumeOfIssue = ulong.Parse(SplittedArray[0].Replace(" ",String.Empty));
+                                    this.IssueCurrency = SplittedArray[1]; break;
+
+                                    case "Объем в обращении, шт":
+                                    this.VolumeOutstanding = ulong.Parse(value.Replace(" ", String.Empty)); break;
+
+                                    case "Объем в обращении":
+                                    string[] VolumeOutstandingSplittedArray = value.Split("&nbsp;");
+                                    this.VolumeOutstandingCount = ulong.Parse(VolumeOutstandingSplittedArray[0].Replace(" ",String.Empty));
+                                    this.VolumeOutstandingCurrency = VolumeOutstandingSplittedArray[1]; break;
+
+                                    case "Период обращения, дней":
+                                    this.PeriodOfTreatmentDays = ulong.Parse(value); break;
+
+                                    case "Дней до погашения":
+                                    this.DaysToMaturity = ulong.Parse(value); break;
+
+                                    case "Дата ближайшей оферты":
+                                    try
+                                    {
+                                    this.DateOfTheNearestOffer = DateTime.Parse(value); 
+                                    }
+                                    catch { this.DateOfTheNearestOffer = null; }
+                                    break;
+
+                                    case "Периодичность выплат в год":
+                                    this.FrequencyOfPaymentsPerYear = ulong.Parse(value);
+                                    break;
+
+                                    case "Дата выплаты купона":
+                                    this.CouponPaymentDate = DateTime.Parse(value);
+                                    break;
+
+                                    case "Размер купона, % годовых":
+                                    try
+                                    {
+                                        System.Globalization.CultureInfo[] providers = { new System.Globalization.CultureInfo("en-US"), new System.Globalization.CultureInfo("ru-RU") };
+                                        this.CouponPerAnnum = float.Parse(value.Replace(" ", String.Empty), providers[1]); 
+                                    }
+                                    catch { }
+                                    break;
+
+                                    case "НКД":
+                                    string[] NKDSplittedArray = value.Split("&nbsp;");
+                                    try
+                                    {   string NKDSTRING = NKDSplittedArray[0].Replace(" ", String.Empty);
+                                        System.Globalization.CultureInfo[] providers = { new System.Globalization.CultureInfo("en-US"), new System.Globalization.CultureInfo("ru-RU") };
+                                        this.NKD = float.Parse(NKDSTRING, providers[1]);
+                                    }
+                                    catch
+                                    {}
+                                    this.NKDCurrency = NKDSplittedArray[1]; break;
+
+                                    
+
+
+                                        default:
+                                        break;
+                                }
+                            }
+                //navigate to nex table 7 (emitent page)
+                this.INN = this.GetEmitentINNByHref(CurrentHTMLPageAsDoc.DocumentNode.SelectSingleNode("//html/body/table[4]/tr/td[4]/table[3]/tr/td[2]/a").GetAttributeValue("href",""));
+                    
+                }
+            catch {}
+            
+
+
             
         }
+        public ulong GetEmitentINNByHref(string href)
+        {
+            try
+            {
+                // получает веб страницу для парсинга
+                HtmlWeb CurrentHTMLPage = new HtmlWeb
+                {
+                    OverrideEncoding = Encoding.GetEncoding("Windows-1251")
+                };
+                HtmlAgilityPack.HtmlDocument CurrentHTMLPageAsDoc = CurrentHTMLPage.Load("http://rusbonds.ru" + href.Replace("\"", ""));
 
+                HtmlNodeCollection tempNodesCollection = CurrentHTMLPageAsDoc.DocumentNode.SelectNodes("//html/body/table[4]/tr/td[4]/table[7]//tr"); 
+                ulong TempINN;
+                foreach (HtmlNode node in tempNodesCollection)
+                {
+                    string swch = node.InnerText.Split(':')[0];
+                    switch (swch)
+                    {
+                        case "ИНН":
+                            TempINN = ulong.Parse(node.InnerText.Split(':')[1]);
+                            return TempINN;
+                        default:
+                            break;
+                    }
+                 
+                }
+                return 0;
+            }
+            catch { return 0; }
+        }
     }
 
     /// <summary>  
@@ -93,11 +239,18 @@ namespace RusBounds
     /// </summary> 
     public class RBParser
     {
-        /// <summary>  
-        /// Получение номера последней страницы с облигациями
-        /// </summary>
-        /// <param name="URL">URL на страницу с гридом</param>
-        public int GetPageCounter(string URL)
+        public RBParser()
+        {
+
+            // for ubuntu support
+
+            //System.Text.Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        }
+            /// <summary>  
+            /// Получение номера последней страницы с облигациями
+            /// </summary>
+            /// <param name="URL">URL на страницу с гридом</param>
+            public int GetPageCounter(string URL)
         {
             //счетчик тегов /a[i] с интервалами
             int i = 0;
@@ -188,8 +341,9 @@ namespace RusBounds
                HtmlNodeCollection testc = docLine.DocumentNode.SelectNodes("//table[@class='tbl_data tbl_headgrid']//tbody//tr"); // /html[1]/body[1]/div[1]/table[4]/tr[1] - это таблица со страницами
                nline = testc.Count;
             }
-            catch  (Exception e)
-            { }
+            catch  
+            { // nothing to do just return value
+            }
             Console.WriteLine("nline: "+nline );
             return (nline);
         }
@@ -200,6 +354,10 @@ namespace RusBounds
         /// </summary>
         public BondRelease[] Start()
         {
+#if DEBUG
+           //BondRelease Test = new BondRelease();
+            //Test.GetEmitentINNByHref("/ank_org.asp?emit=89952");
+#endif
             // определяет кол-во страниц в мультистраничном гриде веб страницы
             int PageCounter = this.GetPageCounter("http://www.rusbonds.ru/srch_simple.asp?go=0&ex=0&s=1&d=1&p=0");
 
@@ -247,8 +405,9 @@ namespace RusBounds
                                 EmitentArrayToReturn[ArrayCurrentElementIndex].BondName = CurrentBondName.InnerHtml;
 
                                 HtmlNode mhref = row.SelectSingleNode("td[2]");
-                                string bondhref = mhref.GetAttributeValue("href", null);
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].GetBondDataByHref(bondhref);
+                                string bondhref = mhref.InnerHtml.Split("\"")[1];
+
+                                EmitentArrayToReturn[ArrayCurrentElementIndex].SetBondDataByHref(bondhref);
 
                                 HtmlNode CurrentReleaseStatus = row.SelectSingleNode("td[3]");
                                 EmitentArrayToReturn[ArrayCurrentElementIndex].ReleaseStatus = CurrentReleaseStatus.InnerHtml;
@@ -256,24 +415,28 @@ namespace RusBounds
                                 HtmlNode CurrentRegistrationNumber = row.SelectSingleNode("td[4]");
                                 EmitentArrayToReturn[ArrayCurrentElementIndex].RegistrationNumber = CurrentRegistrationNumber.InnerHtml;
 
-                                HtmlNode CurrentStartOfPlacemen = row.SelectSingleNode("td[5]");
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].StartOfPlacemen = DateTime.Parse(CurrentStartOfPlacemen.InnerHtml);
+                                HtmlNode CurrentStartOfPlacement = row.SelectSingleNode("td[5]");
+                                if (CurrentStartOfPlacement.InnerText == "&nbsp;")
+                                { EmitentArrayToReturn[ArrayCurrentElementIndex].StartOfPlacement = null; }
+                                else
+                                {
+                                    EmitentArrayToReturn[ArrayCurrentElementIndex].StartOfPlacement = DateTime.Parse(CurrentStartOfPlacement.InnerHtml);
+                                }
 
                                 HtmlNode CurrentMaturityDate = row.SelectSingleNode("td[6]");
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].MaturityDate = DateTime.Parse(CurrentMaturityDate.InnerHtml);
+                                if (CurrentMaturityDate.InnerText == "&nbsp;")
+                                {
+                                    EmitentArrayToReturn[ArrayCurrentElementIndex].MaturityDate = null;
+                                }
+                                else
+                                {
 
-                                HtmlNode CurrentReleaseStatus = row.SelectSingleNode("td[7]");
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].ReleaseStatus = CurrentReleaseStatus.InnerHtml;
-
-                                HtmlNode CurrentReleaseStatus = row.SelectSingleNode("td[8]");
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].ReleaseStatus = CurrentReleaseStatus.InnerHtml;
-
-                                HtmlNode CurrentReleaseStatus = row.SelectSingleNode("td[9]");
-                                EmitentArrayToReturn[ArrayCurrentElementIndex].ReleaseStatus = CurrentReleaseStatus.InnerHtml;
-
+                                    EmitentArrayToReturn[ArrayCurrentElementIndex].MaturityDate = DateTime.Parse(CurrentMaturityDate.InnerHtml);
+                                }
                                 CurrentRowIndex++;
+
+                                ArrayCurrentElementIndex++;
                             }
-                        ArrayCurrentElementIndex++;
                     }
                     //проверка конца массива строк на странице - условие перехода на новую страницу
                     while (CurrentRowIndex <= RowCounter);
@@ -290,7 +453,7 @@ namespace RusBounds
                     break;
                 }
             }
-            while (CurrentPageIndex != 300);//заведомо большое число страниц
+            while (CurrentPageIndex != 20000);//заведомо большое число страниц
 
 #if DEBUG
             Console.WriteLine("Total Emitent count is " + EmitentArrayToReturn.Count());
@@ -307,114 +470,5 @@ namespace RusBounds
         }
     }
 }
-    //        /// <summary>  
-    //        ///  Получение данных об эмитенте
-    //        /// </summary>
-    //        /// <param name="emithref">Относительный URL на странице которого находится грид с анкетой компании</param>
-    //        emitent GetEmitentData(string emithref)
-    //        {
-    //            emitent Emit = new emitent(int.Parse(emithref.Split('=')[1]));
-    //            string FullEmitentUrl = "http://www.rusbonds.ru" + emithref;
-    //            try
-    //            {
-    //                HtmlAgilityPack.HtmlWeb web1 = new HtmlWeb();
-    //                web1.OverrideEncoding = Encoding.GetEncoding("Windows-1251");
-    //                HtmlAgilityPack.HtmlDocument doc1 = web1.Load(FullEmitentUrl);
-    //                //Emit.emit = int.Parse(idemitent);
-
-    //                HtmlNodeCollection EmitentInfo = doc1.DocumentNode.SelectNodes("/html//body/table[4]//tbody/tr");
-    //                foreach(HtmlNode node in EmitentInfo)
-    //                {
-    //                    string swch = node.InnerText.Split(':')[0];
-    //                    switch (swch)
-    //                    {
-    //                        case "Наименование":
-    //                            Emit.Issuer = node.InnerText.Split(':')[1];
-    //                            break;
-    //                        case "Основной ОКВЭД":
-    //                            Emit.TypeOfBusiness = node.InnerText.Split(':')[1];
-    //                            break;
-    //                        case "Страна":
-    //                            Emit.Country = node.InnerText.Split(':')[1];
-    //                            break;
-
-    //                        case "Регион":
-    //                            Emit.Region = node.InnerText.Split(':')[1];
-    //                            break;
-
-    //                        case "ИНН":
-    //                            Emit.INN = ulong.Parse(node.InnerText.Split(':')[1]);
-    //                            break;
-
-    //                        case "ОКПО или др.":
-    //                            Emit.OKPO = node.InnerText.Split(':')[1];
-    //                            break;
-
-    //                        case "Данные госрегистрации":
-    //                            Emit.GosRegData = node.InnerText.Split(':')[1];
-    //                            break;
-
-    //                        case "Юридический адрес":
-    //                            Emit.LowAddress = node.InnerText.Split(':')[1];
-    //                            break;
-
-    //                        case "Почтовый адрес":
-    //                            Emit.MailingAddress = node.InnerText.Split(':')[1];
-    //                            break;
-    //                        case "Вид собственности":
-    //                            Emit.TypeOfProperty = node.InnerText.Split(':')[1];
-    //                            break;
-
-    //                        case "Уставный капитал":
-    //                            string[] U = this.GetCapital(node.InnerText.Split(':')[1]); //вытягиваем число с пробелами из уставного капитала до букв валюты   
-    //                            Emit.CharterCapital = ulong.Parse(U[0].Replace(" ", String.Empty)); // удаляем пробелы из числа
-
-    //                            string[] V = this.Сurrency(node.InnerText.Split(':')[1]); //вытягиваем валюту из уставного капитала
-    //                            Emit.CharterCapitalCurrency = (V[V.Length - 1].Replace(" ", String.Empty)); // удаляем пробелы из числа
-    //                            break;
-
-    //                        default:
-    //                            break;
-    //                    }                 
-    //                }                
-
-    //                return (Emit);
-    //            }
-    //            catch(Exception e)
-    //                {
-    //#if DEBUG
-    //                Console.WriteLine(e.Message + " " + FullEmitentUrl);
-    //#endif
-    //                // on error just return data "as is"
-    //                return (Emit);                
-    //                }
-    //            }
-    //        /// <summary>  
-    //        ///  Получение числа уставного капитала до валюты со сплитом строки 
-    //        /// </summary>
-    //        /// <param name="Val">Исходная строка в формате "10 100 000 000 RUR"</param>
-    //        string[] GetCapital(string Val) 
-    //        {
-    //            string pattern = "[A-Z]+";
-    //            string[] result = Regex.Split(Val, pattern,
-    //                                          RegexOptions.IgnoreCase);
-    //            return (result);
-    //        }
-
-    //        /// <summary>  
-    //        ///  Получение типа валюты уставного капитала
-    //        /// </summary>
-    //        /// <param name="Val1">Исходная строка в формате "10 100 000 000 RUR"</param>
-    //        string[] Сurrency(string Val1)
-    //        {
-    //            string pattern = "[0-9]";
-    //            //string input = "Abc1234Def5678Ghi9012Jklm";
-    //           string[] result1 = Regex.Split(Val1, pattern,
-    //                                          RegexOptions.IgnoreCase);
-
-    //            return (result1);
-    //        }
-
-
 
 
