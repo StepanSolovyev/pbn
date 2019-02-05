@@ -42,4 +42,5 @@ namespace RusBounds
                 CharterCapitalСurrency = "";
             }
         }
+    }
 }

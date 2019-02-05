@@ -47,7 +47,6 @@ C:\Users\ikuligina\pbn\RusBounds\RusBounds\bin\Debug\RusBounds.pdb
 C:\Users\ikuligina\pbn\RusBounds\RusBounds\bin\Debug\HtmlAgilityPack.dll
 C:\Users\ikuligina\pbn\RusBounds\RusBounds\bin\Debug\HtmlAgilityPack.pdb
 C:\Users\ikuligina\pbn\RusBounds\RusBounds\bin\Debug\HtmlAgilityPack.xml
-C:\Users\ikuligina\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.csprojResolveAssemblyReference.cache
 C:\Users\ikuligina\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.csproj.CoreCompileInputs.cache
 C:\Users\ikuligina\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.exe
 C:\Users\ikuligina\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.pdb
@@ -62,3 +61,5 @@ D:\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.csproj.CoreCompileInputs.cache
 D:\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.csproj.CopyComplete
 D:\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.exe
 D:\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.pdb
+C:\Users\ikuligina\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.csprojAssemblyReference.cache
+C:\Users\ikuligina\pbn\RusBounds\RusBounds\obj\Debug\RusBounds.csproj.CopyComplete

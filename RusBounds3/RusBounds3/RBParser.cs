@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text;
-using System.Text.RegularExpressions;
+//using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using System.Linq;
-using System.Globalization;
+//using System.Globalization;
 
 namespace RusBounds
 {
@@ -101,7 +101,8 @@ namespace RusBounds
                                 if(SwchValueKeyPair.Count() > 2 || SwchValueKeyPair.Count() < 2 )continue;
                                 string swch = SwchValueKeyPair[0];
                                 string value = SwchValueKeyPair[1];
-                                
+                                char[] charsToTrim = { 'n', 'b', 's', 'p', ';' }; //для удаления символов nbsp из SplittedArray[1]
+                                                                                 
                                 switch (swch)
                                 {
                                     // table 7 switch
@@ -131,17 +132,19 @@ namespace RusBounds
                                     this.EmissionVolume = ulong.Parse(value.Replace(" ",String.Empty)); break;
 
                                     case "Объем эмиссии":
-                                    string[] SplittedArray = value.Split("&nbsp;");
+                                    
+                                    string[] SplittedArray = value.Split('&');//должно быть &nbps
                                     this.VolumeOfIssue = ulong.Parse(SplittedArray[0].Replace(" ",String.Empty));
-                                    this.IssueCurrency = SplittedArray[1]; break;
+                                    this.IssueCurrency = SplittedArray[1].Trim(charsToTrim);
+                                    break;
 
                                     case "Объем в обращении, шт":
                                     this.VolumeOutstanding = ulong.Parse(value.Replace(" ", String.Empty)); break;
 
                                     case "Объем в обращении":
-                                    string[] VolumeOutstandingSplittedArray = value.Split("&nbsp;");
+                                    string[] VolumeOutstandingSplittedArray = value.Split('&');//должно быть &nbps
                                     this.VolumeOutstandingCount = ulong.Parse(VolumeOutstandingSplittedArray[0].Replace(" ",String.Empty));
-                                    this.VolumeOutstandingCurrency = VolumeOutstandingSplittedArray[1]; break;
+                                    this.VolumeOutstandingCurrency = VolumeOutstandingSplittedArray[1].Trim(charsToTrim); break;
 
                                     case "Период обращения, дней":
                                     this.PeriodOfTreatmentDays = ulong.Parse(value); break;
@@ -175,7 +178,7 @@ namespace RusBounds
                                     break;
 
                                     case "НКД":
-                                    string[] NKDSplittedArray = value.Split("&nbsp;");
+                                    string[] NKDSplittedArray = value.Split('&'); //должно быть &nbps
                                     try
                                     {   string NKDSTRING = NKDSplittedArray[0].Replace(" ", String.Empty);
                                         System.Globalization.CultureInfo[] providers = { new System.Globalization.CultureInfo("en-US"), new System.Globalization.CultureInfo("ru-RU") };
@@ -183,7 +186,7 @@ namespace RusBounds
                                     }
                                     catch
                                     {}
-                                    this.NKDCurrency = NKDSplittedArray[1]; break;
+                                    this.NKDCurrency = NKDSplittedArray[1].Trim(charsToTrim); break;
 
                                     
 
@@ -197,10 +200,7 @@ namespace RusBounds
                     
                 }
             catch {}
-            
-
-
-            
+                     
         }
         public ulong GetEmitentINNByHref(string href)
         {
@@ -405,7 +405,7 @@ namespace RusBounds
                                 EmitentArrayToReturn[ArrayCurrentElementIndex].BondName = CurrentBondName.InnerHtml;
 
                                 HtmlNode mhref = row.SelectSingleNode("td[2]");
-                                string bondhref = mhref.InnerHtml.Split("\"")[1];
+                                string bondhref = mhref.InnerHtml.Split('\"')[1];
 
                                 EmitentArrayToReturn[ArrayCurrentElementIndex].SetBondDataByHref(bondhref);
 
