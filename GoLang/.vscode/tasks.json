@@ -1,0 +1,18 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "/usr/local/go/bin/go",
+            "type": "process",
+            "args": [
+                "build",
+                "-o",
+                "${workspaceFolder}/test/builds/test",
+                "-i",
+                "${workspaceFolder}/test/test.go"
+            ]
+            
+        }
+    ]
+}
